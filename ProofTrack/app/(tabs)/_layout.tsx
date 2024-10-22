@@ -36,7 +36,16 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="Profile"
+          name="project_list"
+          options={{
+            title: 'Projects',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? 'list-sharp' : 'list-outline'} color={color} size={24} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, focused }) => (

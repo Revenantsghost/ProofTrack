@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 
-function Profile(props: any) {
-  return <View style={styles.container}></View>;
+export default function Profile(props: any) {
+  return (<View style={styles.container}>
+  </View>);
 }
 
 const styles = StyleSheet.create({
@@ -10,5 +11,3 @@ const styles = StyleSheet.create({
     flex: 1
   }
 });
-
-export default Profile;
