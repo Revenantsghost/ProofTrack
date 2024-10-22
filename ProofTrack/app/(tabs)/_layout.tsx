@@ -18,6 +18,15 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
+          name="proof"
+          options={{
+            title: 'Proof',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? 'add-sharp' : 'add-outline'} color={color} size={24} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="index"
           options={{
             title: 'Home',
@@ -31,7 +40,7 @@ export default function TabLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+              <Ionicons name={focused ? 'build-sharp' : 'build-outline'} color={color} size={24}/>
             ),
           }}
         />
