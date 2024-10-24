@@ -6,7 +6,7 @@ export default function TabLayout() {
     return (
         <Tabs
         screenOptions={{
-          tabBarActiveTintColor: '#ffd33d',
+          tabBarActiveTintColor: '#4A90E2',
           headerStyle: {
             backgroundColor: '#25292e',
           },
@@ -49,7 +49,7 @@ export default function TabLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'build-sharp' : 'build-outline'} color={color} size={24}/>
+              <Ionicons name={focused ? 'person-sharp' : 'person-outline'} color={color} size={24}/>
             ),
           }}
         />
