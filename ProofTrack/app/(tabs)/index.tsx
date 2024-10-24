@@ -12,7 +12,7 @@ export default function Index() {
       <Text>This will function as the home page.</Text>
 
       <TouchableOpacity
-        //onPress={console.log("im pressed")}
+        //onPress={navigation.navigate('Profile', {name: 'Jane'})}
         style={styles.roundButton}>
         <Text>I'm a button</Text>
       </TouchableOpacity>
