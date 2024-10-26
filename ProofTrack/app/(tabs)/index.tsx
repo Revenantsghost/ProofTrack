@@ -1,20 +1,16 @@
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function Index() {
+export default function Index({ userName = "User" }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>This will function as the home page.</Text>
+    <View style={styles.container}>
+      <Text style={styles.welcomeText}>Welcome to ProofTrack, {userName}!</Text>
 
       <TouchableOpacity
         //onPress={navigation.navigate('Profile', {name: 'Jane'})}
         style={styles.roundButton}>
-        <Text>I'm a button</Text>
+        <Ionicons name="camera" size={48} color="white" /> 
       </TouchableOpacity>
     </View>
     
@@ -23,14 +19,25 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: { 
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
   roundButton: {
-    marginTop: 20,
-    width: 150,
-    height: 150,
+    position: 'absolute',
+    bottom: 30,
+    width: 100,
+    height: 100,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 100,
+    borderRadius: 50,
     backgroundColor: '#4a91e2',
   },
 });
