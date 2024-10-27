@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, Button, TouchableOpacity, StyleSheet } from "react-native";
+
+import { Link } from 'expo-router';
 
 export default function Index({ userName = "User" }) {
   return (
@@ -8,12 +10,16 @@ export default function Index({ userName = "User" }) {
       <Text style={styles.welcomeText}>Welcome to ProofTrack, {userName}!</Text>
 
       <TouchableOpacity
-        //onPress={navigation.navigate('Profile', {name: 'Jane'})}
+        //onPress={() => navigation.navigate('Profile', {name: userName})}
+        //onPress={() => alert("You've pressed me!")}
         style={styles.roundButton}>
         <Ionicons name="camera" size={48} color="white" /> 
       </TouchableOpacity>
+
+      <Link href="../submit_proof" style={styles.roundButton}>
+        <Ionicons name="camera" size={48} color="white" />
+      </Link>
     </View>
-    
   );
 
 }
@@ -39,5 +45,5 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 50,
     backgroundColor: '#4a91e2',
-  },
+  }
 });
