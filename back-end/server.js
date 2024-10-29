@@ -1,7 +1,7 @@
 require('dotenv').config();
 const sql = require('mssql');
 
-// Configure connection parameters using .env variables
+
 const config = {
   user: process.env.AZURE_SQL_USERNAME,
   password: process.env.AZURE_SQL_PASSWORD,
@@ -21,7 +21,7 @@ async function testConnection() {
     console.log("Connected to the database!");
 
     
-    const result = await sql.query`SELECT * FROM proofTrackDemo`; // Replace with an actual table name
+    const result = await sql.query`SELECT * FROM proofTrackDemo`; 
     console.log("Query result:", result);
   } catch (err) {
     console.error("Error connecting to the database:", err);
