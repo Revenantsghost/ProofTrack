@@ -1,54 +1,44 @@
-import { Text, TextStyle, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Text, View, Pressable, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function Index() {
+import { Link } from 'expo-router';
+
+export default function Index({ userName = "User" }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={styles.header1}>Welcome to ProofTrack!</Text>
-      <Text style={styles.body}>
-        First set up your password under the Profile tab!{'\n'}
-        After you've set up a password it's time to start on your first project! {'\n'}
-        Click on the New Project tab to specify the parameters for a new project. {'\n'}
-        Once your project is set up, ProofTrack will schedule persistent reminders for you. {'\n'}
-        To stop being reminded, simply submit proof of your progress.
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.welcomeText}>Welcome to ProofTrack, {userName}!</Text>
 
-      <TouchableOpacity
-        //onPress={navigation.navigate('Profile', {name: 'Jane'})}
-        style={styles.roundButton}>
-        <Text>I'm a button</Text>
-      </TouchableOpacity>
+      <Link href="../submit_proof" asChild>
+        <TouchableOpacity style={styles.roundButton}>
+          <Ionicons name="camera" size={48} color="white" />
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
   roundButton: {
-    marginTop: 20,
-    width: 150,
-    height: 150,
+    position: 'absolute',
+    bottom: 30,
+    width: 100,
+    height: 100,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 100,
+    borderRadius: 50,
     backgroundColor: '#4a91e2',
-  },
-  header1: {
-    fontFamily: 'Arial',
-    fontSize: 28,
-    justifyContent: 'center',
-    alignContent: 'flex-start',
-  },
-  body: {
-    fontFamily: 'Arial',
-    fontSize: 18,
-    justifyContent: 'center',
-    alignItems: 'stretch',
   }
 });
