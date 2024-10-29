@@ -31,5 +31,21 @@ async function testConnection() {
   }
 }
 
+async function testInsert() {
+  try {
+    await sql.connect(config);
+    console.log("Connected to the database!");
+    const result = await sql.query`INSERT INTO proofTrackDemo (file_name, file_url) VALUES ('test', 'test')`; 
+    console.log("Query result:", result);
+  } catch (err) {
+    console.error("Error connecting to the database:", err);
+  } finally {
 
+    await sql.close();
+  }
+}
+
+
+testInsert();
 testConnection();
+
