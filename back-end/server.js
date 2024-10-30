@@ -35,7 +35,8 @@ async function testInsert() {
   try {
     await sql.connect(config);
     console.log("Connected to the database!");
-    const result = await sql.query`INSERT INTO proofTrackDemo (file_name, file_url) VALUES ('test', 'test')`; 
+    var values = ['link1', 'link1_url'];
+    const result = await sql.query(`INSERT INTO proofTrackDemo (file_name, file_url) VALUES ('${values[0]}', '${values[1]}')`); 
     console.log("Query result:", result);
   } catch (err) {
     console.error("Error connecting to the database:", err);
