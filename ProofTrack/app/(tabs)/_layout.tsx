@@ -1,13 +1,11 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
-
+import { User } from '../types';
 import { createContext } from 'react';
 
-type User = { username: string, userID: number };
-
+// Change this username here!
 const beta: User = { username: "Beta", userID: 12345 };
-
 export const UserContext = createContext(beta);
 
 export default function TabLayout() {
