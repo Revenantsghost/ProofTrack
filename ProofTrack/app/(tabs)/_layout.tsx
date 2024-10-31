@@ -2,8 +2,17 @@ import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 
+import { createContext } from 'react';
+
+type User = { username: string, userID: number };
+
+const beta: User = { username: "Beta", userID: 12345 };
+
+export const UserContext = createContext(beta);
+
 export default function TabLayout() {
     return (
+      <UserContext.Provider value={beta}>
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: '#4A90E2',
@@ -54,6 +63,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      </UserContext.Provider>
     );
   }
   
