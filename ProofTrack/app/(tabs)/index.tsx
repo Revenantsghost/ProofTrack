@@ -1,17 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useContext } from "react";
 import { Text, View, Pressable, TouchableOpacity, StyleSheet } from "react-native";
-
 import { Link } from 'expo-router';
-
-import { useContext } from 'react';
-
 import { UserContext } from './_layout';
 
 type User = { username: string, userID: number };
 
 export default function Index({ userName = "User" }) {
-  const beta: User = useContext(UserContext) as User;
+  const beta: User = useContext(UserContext);
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to ProofTrack, {beta.username}!</Text>
