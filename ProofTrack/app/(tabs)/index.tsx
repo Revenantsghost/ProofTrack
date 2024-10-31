@@ -4,10 +4,17 @@ import { Text, View, Pressable, TouchableOpacity, StyleSheet } from "react-nativ
 
 import { Link } from 'expo-router';
 
+import { useContext } from 'react';
+
+import { UserContext } from './_layout';
+
+type User = { username: string, userID: number };
+
 export default function Index({ userName = "User" }) {
+  const beta: User = useContext(UserContext) as User;
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome to ProofTrack, {userName}!</Text>
+      <Text style={styles.welcomeText}>Welcome to ProofTrack, {beta.username}!</Text>
 
       <Link href="../submit_proof" asChild>
         <TouchableOpacity style={styles.roundButton}>
