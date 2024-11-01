@@ -19,6 +19,18 @@ app.get('/fetchData', async (req, res) => {
     }
 });
 
+app.get('/insertData', async (req, res) => {
+    try {
+        const pool = await connectToDB();
+        var values = [req.body[0].file_name, req.body[0].file_url];
+        const result = await pool.request().query(`INSERT INTO proofTrackDemo (file_name, file_url) VALUES ('${values[0]}', '${values[1]}')`);
+        res.status(200);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
