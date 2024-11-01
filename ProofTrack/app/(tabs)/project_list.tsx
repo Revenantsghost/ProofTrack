@@ -1,7 +1,10 @@
-import React from "react";
-import { Text, View } from "react-native";
+import React, { useContext } from 'react';
+import { Text, View } from 'react-native';
+import { UserContext } from './_layout';
+import { User } from '../types';
 
 export default function ProjectList() {
+  const user: User = useContext(UserContext);
   return (
     <View
       style={{
@@ -10,7 +13,7 @@ export default function ProjectList() {
         alignItems: "center",
       }}
     >
-      <Text>This is where you'll view your projects.</Text>
+      <Text>This is where you'll view your projects, {user.username}.</Text>
     </View>
   );
 }

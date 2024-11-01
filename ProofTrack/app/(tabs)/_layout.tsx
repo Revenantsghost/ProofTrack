@@ -1,8 +1,7 @@
-import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React from 'react';
+import { Tabs } from 'expo-router';
+import React, { createContext } from 'react';
 import { User } from '../types';
-import { createContext } from 'react';
 
 // Change this username here!
 const beta: User = { username: "Beta", userID: 12345 };
