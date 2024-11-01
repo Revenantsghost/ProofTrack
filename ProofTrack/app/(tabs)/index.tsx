@@ -1,22 +1,22 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import React, { useContext } from "react";
-import { Text, View, Pressable, TouchableOpacity, StyleSheet } from "react-native";
-import { Link } from 'expo-router';
+import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 import { UserContext } from './_layout';
+import { User } from '../types';
 
-type User = { username: string, userID: number };
-
-export default function Index({ userName = "User" }) {
-  const beta: User = useContext(UserContext);
+export default function Index() {
+  const user: User = useContext(UserContext);
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome to ProofTrack, {beta.username}!</Text>
+      <Text style={styles.welcomeText}>Welcome to ProofTrack, {user.username}!</Text>
 
-      <Link href="../submit_proof" asChild>
-        <TouchableOpacity style={styles.roundButton}>
-          <Ionicons name="camera" size={48} color="white" />
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity
+        style={styles.roundButton}
+        onPress={() => {router.navigate('../submit_proof')}}
+      >
+        <Ionicons name="camera" size={48} color="white" />
+      </TouchableOpacity>
     </View>
   );
 

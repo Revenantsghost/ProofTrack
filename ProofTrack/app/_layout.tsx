@@ -1,10 +1,21 @@
-import { Stack } from "expo-router";
-import React from "react";
+import { Stack } from 'expo-router';
+import React from 'react';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#25292e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Main" }} />
+      <Stack.Screen name="submit_proof" options={{ headerShown: true, title: "Submit Proof" }} />
     </Stack>
   );
 }
