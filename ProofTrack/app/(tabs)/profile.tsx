@@ -9,19 +9,19 @@ export default function Profile() {
   const user: User = useContext(UserContext);
   return (
     <View>
-      <View style={{ alignItems: "center", top: 37.5 }}>
+      <View style={{ alignItems: "center", top: 30 }}>
         <Ionicons name="person" size={64} color="#25292e" />
       </View>
       <Text style={styles.profileName}>
         {appendApostrophe(user.username)} Profile
       </Text>
-      <View style={{ flexDirection: "row", top: 80 }}>
+      <View style={{ top: 90 }}>
         <Text style={styles.leftText}>Username</Text>
         <Link href="../edit_username" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
-      <View style={{ flexDirection: "row", top: 120 }}>
+      <View style={{ top: 140 }}>
         <Text style={styles.leftText}>Password</Text>
-        <Link href="../edit_username" style={styles.rightLink}>{"[Edit]"}</Link>
+        <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
     </View> 
   );
@@ -40,6 +40,12 @@ function appendApostrophe(name: string): string {
 }
 
 const styles = StyleSheet.create({
+  profileName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    top: 50,
+  },
   leftText: {
     position: "absolute",
     fontSize: 20,
@@ -47,17 +53,11 @@ const styles = StyleSheet.create({
     left: 30,
     textAlign: "left",
   },
-  profileName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    top: 50,
-  },
   rightLink: {
     position: "absolute",
     fontSize: 20,
     fontWeight: "bold",
-    color: '#4A90E2',
+    color: "#4A90E2",
     textAlign: "right",
     right: 30,
   },
