@@ -12,7 +12,7 @@ export default function Profile() {
   // Grab the current user's information.
   const user: User = useContext(UserContext);
   // Convert their username into its possessive form.
-  const theirs: string = appendApostrophe(user.username)
+  const theirs: string = appendApostrophe(user.username);
   return (
     <View>
       <View style={{ alignItems: "center", top: 30 }}>
