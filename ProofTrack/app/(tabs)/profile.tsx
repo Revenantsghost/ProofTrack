@@ -30,7 +30,7 @@ export default function Profile() {
         <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
       <View style={{ top: 210 }}>
-        <Text style={styles.titleText}>{theirs} Stats</Text>
+        <Text style={styles.titleText}>{theirs} Statistics</Text>
       </View>
       <View style={{ top: 230 }}>
         <Text style={styles.leftText}>Projects</Text>
@@ -54,7 +54,7 @@ function appendApostrophe(name: string): string {
 
 const styles = StyleSheet.create({
   titleText: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
   },
