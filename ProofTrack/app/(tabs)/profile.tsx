@@ -5,16 +5,22 @@ import { Link } from 'expo-router';
 import { UserContext } from './_layout';
 import { User } from '../types';
 
+/* UI for user's profile page.
+ * Displays their username and allows them to change username or password.
+ * Also displays some stats, such as number of projects in progress. */
 export default function Profile() {
+  // Grab the current user's information.
   const user: User = useContext(UserContext);
+  // Convert their username into its possessive form.
+  const theirs: string = appendApostrophe(user.username)
   return (
     <View>
       <View style={{ alignItems: "center", top: 30 }}>
         <Ionicons name="person" size={64} color="#25292e" />
       </View>
-      <Text style={styles.profileText}>
-        {appendApostrophe(user.username)} Profile
-      </Text>
+      <View style={{ top: 50 }}>
+        <Text style={styles.titleText}>{theirs} Profile</Text>
+      </View>
       <View style={{ top: 70 }}>
         <Text style={styles.leftText}>Username</Text>
         <Link href="../edit_username" style={styles.rightLink}>{"[Edit]"}</Link>
@@ -23,9 +29,9 @@ export default function Profile() {
         <Text style={styles.leftText}>Password</Text>
         <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
-      <Text style={styles.statsText}>
-        {appendApostrophe(user.username)} Stats
-      </Text>
+      <View style={{ top: 210 }}>
+        <Text style={styles.titleText}>{theirs} Stats</Text>
+      </View>
       <View style={{ top: 230 }}>
         <Text style={styles.leftText}>Projects</Text>
         <Text style={styles.rightText}>{/* user.numProjects? */4}</Text>
@@ -47,17 +53,10 @@ function appendApostrophe(name: string): string {
 }
 
 const styles = StyleSheet.create({
-  profileText: {
+  titleText: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    top: 50,
-  },
-  statsText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    top: 210,
   },
   leftText: {
     position: "absolute",
