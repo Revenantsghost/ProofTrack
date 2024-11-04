@@ -15,23 +15,29 @@ export default function Profile() {
   const theirs: string = appendApostrophe(user.username);
   return (
     <View>
+      { /* Positioning for profile icon. */}
       <View style={{ alignItems: "center", top: 30 }}>
         <Ionicons name="person" size={64} color="#25292e" />
       </View>
+      { /* User profile header text. */ }
       <View style={{ top: 50 }}>
         <Text style={styles.titleText}>{theirs} Profile</Text>
       </View>
+      { /* Row providing link to change username. */ }
       <View style={{ top: 70 }}>
         <Text style={styles.leftText}>Username</Text>
         <Link href="../edit_username" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
+      { /* Row providing link to change password. */ }
       <View style={{ top: 120 }}>
         <Text style={styles.leftText}>Password</Text>
         <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
+      { /* User statistics header text. */ }
       <View style={{ top: 210 }}>
         <Text style={styles.titleText}>{theirs} Statistics</Text>
       </View>
+      { /* Row displaying user's number of projects. */ }
       <View style={{ top: 230 }}>
         <Text style={styles.leftText}>Projects</Text>
         <Text style={styles.rightText}>{/* user.numProjects? */4}</Text>
