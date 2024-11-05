@@ -1,5 +1,5 @@
 //TODO: will eventually be in an api endpoint
-//NOTE: project ids should be ints
+//NOTE: project ids should be ints 
 //TODO: need to change db it points to after we decide what each db is for
 const { BlobServiceClient, generateBlobSASQueryParameters, StorageSharedKeyCredential } = require("@azure/storage-blob");
 const fs = require("fs");
