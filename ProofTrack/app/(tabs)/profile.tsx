@@ -26,7 +26,7 @@ export default function Profile() {
       { /* Row providing link to change username. */ }
       <View style={{ top: 70 }}>
         <Text style={styles.leftText}>Username</Text>
-        <Link href="../edit_username" style={styles.rightLink}>{"[Edit]"}</Link>
+        <Link href="../profile" style={styles.rightLink}>{"[Edit]"}</Link>
       </View>
       { /* Row providing link to change password. */ }
       <View style={{ top: 120 }}>
