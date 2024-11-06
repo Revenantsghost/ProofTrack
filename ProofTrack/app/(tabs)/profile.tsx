@@ -40,7 +40,7 @@ export default function Profile() {
       { /* Row displaying user's number of projects. */ }
       <View style={{ top: 230 }}>
         <Text style={styles.leftText}>Projects</Text>
-        <Text style={styles.rightText}>{/* user.numProjects? */"X"}</Text>
+        <Text style={styles.rightText}>{user.numProjects}</Text>
       </View>
     </View> 
   );
