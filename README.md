@@ -28,3 +28,38 @@ The twist for ProofTrack is how it requires the user to provide proof of practic
 
 Effects
 If successful, this software would help users to stick to a consistent routine while cultivating new talents. The ability to revisit their growth over the course of previous sessions would help them to celebrate their improvement over time.
+
+//User Manual
+
+High-Level Description: 
+Our app acts as a project management tool. It displays and maintains a project by forcing its users to be consistent with their initial goals. 
+It not only displays information but also takes information from a user to gain consistent submissions for their project.
+
+How to install/run the software:
+ 0. Prerequisites
+    Node.js: Ensure that Node.js is installed (recommend version 14.x or higher).
+    Expo CLI: Install the Expo CLI globally if not already installed. Run: 
+    npm install -g expo-cli
+    Expo Go app: For mobile testing, download Expo Go on an Android or iOS device.
+  
+ 1. Clone the Repository: Start by cloning the project repository:
+  git clone https://github.com/Revenantsghost/ProofTrack.git
+  cd ProofTrack
+  Install Dependencies: Install all project dependencies by running: npm install
+  
+ 2. Running the Project
+  Start the Expo Development Server: To start the Expo server, run: npx expo start
+  This will open a new tab in your browser where you can scan a QR code with the Expo Go app on your mobile device.
+  Open Expo Go, scan the QR code in the browser tab, and the app should launch on your device.
+
+How to report a bug:
+Go to Issues within our main repository and copy our template. 
+Within the template there will be simple directions to mention your bug. 
+Please be as specific as possible and check if the issue you are bringing up has been listed before.
+
+Known Bugs: 
+Currently known bugs are listed in the Issues folder.
+
+
+
+
