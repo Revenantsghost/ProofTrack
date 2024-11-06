@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
+import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { User } from './types';
 
 export default function index() {
-  const [email, setEmail] = useState('');
+  const [userID, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if (email && password) {
+    if (userID && password) {
       // Perform login action
-      Alert.alert('Login Successful', `Welcome, ${email}!`);
+      Alert.alert('Login Successful', `Welcome, ${userID}!`);
+      // From HERE, we want to fetch the user's information.
+      // Then we store it as a User type.
+      
+      // router.replace CAN be modified to include information you want to pass in as well!
+      const beta: User = { username: "Beta", userID: 12345, numProjects: 4 };
+
+      router.replace('./(tabs)/');
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }
@@ -20,8 +29,8 @@ export default function index() {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
+        placeholder="User ID"
+        value={userID}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
