@@ -36,6 +36,7 @@ Our app acts as a project management tool. It displays and maintains a project b
 It not only displays information but also takes information from a user to gain consistent submissions for their project.
 
 How to install/run the software:
+
  0. Prerequisites
     Node.js: Ensure that Node.js is installed (recommend version 14.x or higher).
     Expo CLI: Install the Expo CLI globally if not already installed. Run: 
