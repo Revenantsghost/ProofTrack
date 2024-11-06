@@ -4,25 +4,25 @@ import React, { createContext } from 'react';
 import { User } from '../types';
 
 // Change this username here!
-const beta: User = { username: "Beta", userID: 12345 };
+const beta: User = { username: "Beta", userID: 12345, numProjects: 4 };
 export const UserContext = createContext(beta);
 
 export default function TabLayout() {
-    return (
-      <UserContext.Provider value={beta}>
-        <Tabs
-          screenOptions={{
-            tabBarActiveTintColor: '#4A90E2',
-            headerStyle: {
-              backgroundColor: '#25292e',
-            },
-            headerShadowVisible: false,
-            headerTintColor: '#fff',
-            tabBarStyle: {
+  return (
+    <UserContext.Provider value={beta}>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: '#4A90E2',
+          headerStyle: {
             backgroundColor: '#25292e',
-            },
-          }}
-        >
+          },
+          headerShadowVisible: false,
+          headerTintColor: '#fff',
+          tabBarStyle: {
+          backgroundColor: '#25292e',
+          },
+        }}
+      >
         <Tabs.Screen
           name="index"
           options={{
@@ -55,12 +55,12 @@ export default function TabLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'person-sharp' : 'person-outline'} color={color} size={24}/>
+              <Ionicons name={focused ? 'person-sharp' : 'person-outline'} color={color} size={24} />
             ),
           }}
         />
       </Tabs>
-      </UserContext.Provider>
-    );
-  }
+    </UserContext.Provider>
+  );
+}
   
