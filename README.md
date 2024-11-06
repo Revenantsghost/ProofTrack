@@ -63,4 +63,47 @@ Currently known bugs are listed in the Issues folder.
 
 
 
+// Developer documentation
 
+The source code of the project is located in the github ProofTrack repository (link: https://github.com/Revenantsghost/ProofTrack). 
+
+The layout of our directory structure includes a .expo directory, .github/workflows directory, ProofTrack directory, back-end directory, reports directory, as well as our README.md file, package-lock.json file, and .env file. The .expo directory was created and added to our project repository since we are using the ExpoGo app to run the application. The .github/workflows directory provides functionality for having workflows in github. The ProofTrack directory contains our app folder, which has a layout file, the submit proof page file, a file defining the types that we use in our project, and the (tabs) directory for the tab pages of our app, like the home/index, new project page, profile page, project list page, and layout file. The ProofTrack folder also contains the default app-example, assets folder (for fonts and images), components folder (which includes defined components, app navigation, and frontend tests. The constants folder, hooks folder, and scripts folder also contain some files for frontend use. 
+The backend directory contains a tests directory which contains a current basic.test.js, a blobservice.js meant to hold blob storage variables, a mediainteraction.js that is meant to insert and extract from blob storage. It also has a server.js which sets up a Node.js backend with express, a index.js that sets up a basic express server, and a basic package.json that holds information about the backends dependencies and helps with setting up jest tests.
+The reports directory contains weekly project reports to help plan and reflect on tasks as a team. The reports are named as YYYMMDD.md and contain two sections, one for the team report and one for contributions of team members.
+
+Build Instructions for ProofTrack
+
+Prerequisites
+
+Node.js: Ensure that Node.js is installed (recommend version 14.x or higher).
+
+Expo CLI: Install the Expo CLI globally if not already installed. Run: 
+
+npm install -g expo-cli
+
+Expo Go app: For mobile testing, download Expo Go on an Android or iOS device.
+
+Setting Up the Project
+
+Clone the Repository: Start by cloning the project repository:
+
+git clone https://github.com/Revenantsghost/ProofTrack.git
+
+cd ProofTrack
+
+Install Dependencies: Install all project dependencies by running: npm install
+
+Running the Project
+
+Start the Expo Development Server: To start the Expo server, run: npx expo start
+
+This will open a new tab in your browser where you can scan a QR code with the Expo Go app on your mobile device.
+
+Testing on a Physical Device: Open Expo Go, scan the QR code in the browser tab, and the app should launch on your device.
+
+
+To run the system’s test cases, run the command: “npm run test” in the terminal. Another way to test is by debugging directly in the package.json file. Frontend testing also includes testing the functionality of components in the ExpoGo app.
+
+Both frontend and backend utilize jest for testing. Test file naming conventions as of right now, we have one test suite for all components. This includes very basic naming conventions.
+
+In the release of our software, a developer will focus on the simulation through expo go as a reference to some sanity checks. Before build, checking node.js version number within app.json could be a sanity check. More importantly, a focus that all dependencies are installed and properly running would also be a good step. During the build of our app with expo go, a developer should simulate and check that the app is properly running in which they will be testing their build. After build, and thorough sanity checks,  a developer may focus on expanding to android and ios users and further on. 
