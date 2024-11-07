@@ -4,20 +4,24 @@ import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-nativ
 import { User } from './types';
 
 export default function index() {
-  const [userID, setEmail] = useState('');
+  const [userID, setUserID] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     if (userID && password) {
       // Perform login action
       Alert.alert('Login Successful', `Welcome, ${userID}!`);
-      // From HERE, we want to fetch the user's information.
-      // Then we store it as a User type.
-      
-      // router.replace CAN be modified to include information you want to pass in as well!
-      const beta: User = { username: "Beta", userID: 12345, numProjects: 4 };
+      /* Main idea: Fetch the user's information using their unique ID.
+       * Then pass said information to the router as its parameters. */
+      const username: string = userID;
+      const numProjects: number = 4;
 
-      router.replace('./(tabs)/');
+      // Right now I've switched the username and userID params for demonstration.
+      // In actuality, you'll enter your userID in the first text bar, not your username.
+      // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
+      router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
+      // The commented-out line is the one that will behave correctly.
+      //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }
@@ -31,7 +35,7 @@ export default function index() {
         style={styles.input}
         placeholder="User ID"
         value={userID}
-        onChangeText={setEmail}
+        onChangeText={setUserID}
         keyboardType="email-address"
         autoCapitalize="none"
       />
