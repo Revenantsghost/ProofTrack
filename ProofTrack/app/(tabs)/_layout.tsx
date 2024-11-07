@@ -1,4 +1,5 @@
 import React, { createContext } from 'react';
+import { Redirect } from 'expo-router';
 import { Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs, useLocalSearchParams } from 'expo-router';
@@ -8,8 +9,16 @@ import { User } from '../types';
 const defaultUser: User = { username: "User", userID: 0, numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
+/* To render the tab layout of our app.
+ * Also handles parsing user data sent here from login page.
+ * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
-  const user: User = parseUser();
+  const user: User | undefined = parseUser();
+  if (user === undefined) {
+    Alert.alert("Unexpected error occured when retrieving your information.");
+    // It may look strange, but this is what's necessary to redirect to ../index.tsx!
+    return <Redirect href='.././' />
+  }
 
   return (
     <UserContext.Provider value={user}>
@@ -69,22 +78,21 @@ export default function TabLayout() {
 
 /* Parses user information given from local search params.
  * Returns a User record type containing said information.
- * If it encounters an error parsing the params,
- * an alert pops up and the user is logged out. */
-function parseUser(): User {
+ * Returns undefined if there's an error parsing the params. */
+function parseUser(): User | undefined {
   const { username, userID, numProjects } = useLocalSearchParams();
   // Ensure the passed parameters are all strings.
   if (typeof(username) !== 'string' || typeof(userID) !== 'string'
-                                   || typeof(numProjects) !== 'string') {
-    Alert.alert("Unexpected error occured when retrieving your information.");
-    // In the future, this may instantly log the user out.
+                                    || typeof(numProjects) !== 'string') {
+    // Undefined signals an error to the caller.
+    return undefined;
   }
   // Ensure we were able to parse numbers out of userID and numProjects.
   const user_ID: number = parseFloat(userID as string);
   const num_projects: number = parseFloat(numProjects as string);
-  if (Number.isNaN(user_ID) || Number.isNaN(num_projects)) {
-    Alert.alert("Unexpected error occured when retrieving your information.");
-    // In the future, this may instantly log the user out.
+if (Number.isNaN(user_ID) || Number.isNaN(num_projects)) {
+    // Undefined signals an error to the caller.
+    return undefined;
   }
   const user: User = {
     username: username as string,

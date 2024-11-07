@@ -19,6 +19,8 @@ export default function index() {
       // Right now I've switched the username and userID params for demonstration.
       // In actuality, you'll enter your userID in the first text bar, not your username.
       // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
+      setUserID('');
+      setPassword('');
       router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
       // The commented-out line is the one that will behave correctly.
       //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
