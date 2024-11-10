@@ -1,78 +1,75 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { UserContext } from './(tabs)/_layout';
+import React from 'react';
+import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable} from 'react-native';
 import { User } from './types';
-import { Camera, CameraType, CameraView, useCameraPermissions } from "expo-camera";
-import * as MediaLibrary from 'expo-media-library';
-import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
+import { router } from 'expo-router';
 
-export default function Index() {
-  const user: User = useContext(UserContext);
-  const [facing, setFacing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
-  const [image, setImage] = useState(null);
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
+// We can't use the context hooks to grab User data (this isn't a child component)
+// I'll find another way to do so.
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
-    return (
-      <GestureHandlerRootView>
-        <View style={styles.container}>
-          <Text style={styles.message}>We need your permission to show the camera</Text>
-          <Button onPress={requestPermission} title="grant permission" />
-        </View>
-      </GestureHandlerRootView>
-    );
-  }
+/* Things are currently hardcoded in, but this will eventually be changed. */
+const projects = [
+  { id: '1', title: 'Study biology for an hour' },
+  { id: '2', title: 'Lose 20lb before the Summer' },
+  { id: '3', title: 'Run on the treadmill for 30min' },
+  { id: '4', title: 'Clean my room' },
+];
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
+/* Renders a single pressable project.
+ * Upon pressing it, the user is directed to the camera usage app. */
+const ItemRow = ({ item }: any) => (
+  <Pressable onPress={() => router.navigate('./upload_media')} style={styles.item}>
+    <Text style={styles.title}>{item.title}</Text>
+  </Pressable>
+);
+
+/* Renders each project as a pressable object, separated by a thin black line.
+ * Upon pressing it, the user is directed to the camera usage app. */
+export default function SubmitProof() {
+  /* Renders a thin black line between each pressable project. */
+  const ItemSeparator = () => (
+    <View style={styles.separator} />
+  );
 
   return (
-    <GestureHandlerRootView>
-      <View style={styles.container}>
-        <CameraView style={styles.camera} facing={facing}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.text}>Flip Camera</Text>
-            </TouchableOpacity>
-          </View>
-        </CameraView>
-      </View>
-    </GestureHandlerRootView>
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={projects}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ItemRow item={item} />
+        )}
+        ItemSeparatorComponent={ItemSeparator}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: 20,
+    backgroundColor: '#f8f8f8',
   },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
+  item: {
+    padding: 15,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
-  camera: {
-    flex: 1,
+  title: {
+    fontSize: 16,
+    color: '#333',
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+  separator: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
 });
