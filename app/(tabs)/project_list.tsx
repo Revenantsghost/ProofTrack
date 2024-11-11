@@ -13,7 +13,13 @@ const projects = [
   { id: '4', title: 'Item 4' },
 ];
 
-//Item row renders each entry in the list as a pressable object
+/**
+ * Renders an individual item row in the list.
+ *
+ * @param {Object} item - The item data for the row.
+ * @param {Function} onPress - Function to handle press events on the item.
+ * @returns {JSX.Element} A pressable item row component.
+ */
 const ItemRow = ({ item, onPress }: any) => (
   <Pressable onPress={() => onPress(item)} style={styles.item}>
     <Text style={styles.title}>{item.title}</Text>
@@ -21,14 +27,30 @@ const ItemRow = ({ item, onPress }: any) => (
   </Pressable>
 );
 
+/**
+ * Renders a separator line between items in the list.
+ *
+ * @returns {JSX.Element} A separator component.
+ */
 const ItemSeparator = () => (
   <View style={styles.separator} />
 );
 
+/**
+ * Main component that displays a list of projects using a FlatList.
+ *
+ * @component
+ */
 export default function ProjectList() {
+  /**
+   * Handles the press event for an item, displaying an alert with the item title.
+   *
+   * @param {Object} item - The item data for the pressed row.
+   */
   const handlePress = (item: any) => {
     alert(`You pressed: ${item.title}`);
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -43,6 +65,9 @@ export default function ProjectList() {
   );
 }
 
+/**
+ * Styles for components.
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
