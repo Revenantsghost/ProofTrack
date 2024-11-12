@@ -142,7 +142,7 @@ app.post('/uploadProject', async (req, res) => {
 
 
 // Find all projects from certain user with query params user_id
-// Returns [{proj_name: STRING}, {proj_name: STRING}, ...] 200
+// Returns [{project_name: STRING}, {project_name: STRING}, ...] 200
 // Returns 404 User Not Found if userID is not found in the database
 // Returns 500 Server Error on server failure
 app.get('/fetchProjects', async (req, res) => {
@@ -157,6 +157,76 @@ app.get('/fetchProjects', async (req, res) => {
                 .query('SELECT proj_id, project_name FROM projects WHERE user_id=@user_id');
             res.status(200).json(result.recordset)
         }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    } finally {
+        await closeDB();
+    }
+});
+
+// Find the project from certain user with query params user_id and proj_id
+// Returns {project_name: STRING} 200
+// Returns 404 User Not Found if userID is not found in the database
+// Returns 404 Project not found if projectID is not found in the database
+// Returns 500 Server Error on server failure
+app.get('/fetchProject', async (req, res) => {
+    try {
+        const user_id = req.query.user_id;
+        const proj_id = req.query.proj_id;
+
+        const pool = await connectToDB();
+        let result = await pool.request()
+                    .input('user_id', user_id)
+                    .query('SELECT user_name FROM users WHERE user_id=@user_id');
+        if (result.recordset.length <= 0) {
+            res.status(404).send('User not found');
+            return
+        }
+        result = await pool.request().input('user_id', user_id).input('proj_id', proj_id)
+                .query('SELECT project_name FROM projects WHERE user_id=@user_id AND proj_id=@proj_id');
+        if (result.recordset.length <= 0) {
+            res.status(404).send('Project not found');
+            return
+        }
+        res.status(200).json(result.recordset[0])
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    } finally {
+        await closeDB();
+    }
+});
+
+// Updates a specific project with {proj_id: INT, user_id: INT, project_name: STRING}
+// Returns 200 project udpated successfully upon success
+// Returns 404 User not found if userID is not found in the database
+// Returns 404 Project not found if projectID is not found in the database
+// Returns 500 Server Error on server failure
+app.put('/updateProject', async (req, res) => {
+    try {
+        const user_id = req.body.user_id;
+        const proj_id = req.body.proj_id;
+        const project_name = req.body.project_name;
+        const pool = await connectToDB();
+        let result = await pool.request().input('user_id', user_id).query('SELECT user_name FROM users WHERE user_id=@user_id');
+        if (result.recordset.length <= 0) {
+            res.status(404).send('User not found');
+            return
+        }
+        result = await pool.request()
+            .input('proj_id', proj_id)
+            .input('user_id', user_id)
+            .query('SELECT project_name FROM projects WHERE user_id=@user_id AND proj_id=@proj_id');
+        if (result.recordset.length <= 0) {
+            res.status(404).send('Project not found');
+            return
+        }
+        await pool.request().input('user_id', user_id)
+            .input('proj_id', proj_id)
+            .input('project_name', project_name)
+            .query('UPDATE projects SET project_name=@project_name WHERE user_id=@user_id AND proj_id=@proj_id');
+        res.status(200).send("Project updated successfully")
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
