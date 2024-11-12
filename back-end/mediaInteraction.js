@@ -24,9 +24,8 @@ const config = {
 
 function hash(filePath) {
     hashed = 0
-    file = filePath.toString()
-    for(let i = 0; i<file.length; i++) {
-        hashed +=  Math.pow(file.charAt(i), i) * Math.pow(31, i)
+    for(let i = 0; i<filePath.length(); i++) {
+        hashed +=  Math.pow(filePath.charAt(i), i) * Math.pow(31, i)
     }
     return hashed
 
@@ -192,10 +191,6 @@ async function insertSasUrl(userId, projectId, sasUrl) {
 
 //FINAL METHOD TO SUBMIT PROOF
 async function submitProof(filePath, projectId, userId) {
-    if (!process.env.AZURE_STORAGE_CONNECTION_STRING || !process.env.AZURE_SQL_USERNAME) {
-        throw new Error("Missing necessary environment variables.");
-    }
-
     uploadMediaToBlob(filePath, projectId, userId);
     hashed = hash(filePath);
     sasUrl = getSasUrls(projectId, userId, hashed);
