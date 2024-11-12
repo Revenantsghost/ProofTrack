@@ -10,10 +10,11 @@ export default function index() {
 
   const handleLogin = () => {
     if (userID && password) {
-      // Perform login action
+      // Perform login action.
       Alert.alert('Login Successful', `Welcome, ${userID}!`);
       /* Main idea: Fetch the user's information using their unique ID.
        * Then pass said information to the router as its parameters. */
+      // Currently, things are just hardcoded in.
       const username: string = userID;
       const numProjects: number = 4;
 

@@ -17,6 +17,7 @@ export default function TabLayout() {
   if (user === undefined) {
     Alert.alert("Unexpected error occured when retrieving your information.");
     // It may look strange, but this is what's necessary to redirect to ../index.tsx!
+    // Upon error, this redirects the user back to the login page.
     return <Redirect href='.././' />
   }
 
