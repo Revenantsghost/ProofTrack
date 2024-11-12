@@ -46,6 +46,9 @@ export default function Profile() {
   );
 }
 
+/* I'll also include Modals that pop up when you
+ * tap "[Edit]" for your username or password. */
+
 /* Returns a name in its possessive form.
  * Ex: Kyle -> Kyle's
  * Ex: Charles -> Charles' */
