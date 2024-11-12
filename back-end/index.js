@@ -1,22 +1,62 @@
 require('dotenv').config();
 const express = require('express');
+
 const cors = require('cors');
 const { connectToDB, closeDB } = require('./db');
+
+const fs = require("fs");
+
+const multer = require("multer"); // for handling file uploads
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/fetchData', async (req, res) => {
+const upload = multer({ dest: "uploads/" }); // temp upload location
+
+const { submitProof } = require("./mediaInteraction.js");
+
+// Endpoint to submit proof
+app.post("/submit-proof", upload.single("file"), async (req, res) => {
+    const filePath = req.file.path;  
+    const projectId = req.body.projectId;
+    const userId = req.body.userId;
+
+    if (!filePath || !projectId || !userId) {
+        return res.status(400).send({ message: "file, projectId, and userId are required." });
+    }
+
     try {
-        const pool = await connectToDB();
-        const result = await pool.request().query('SELECT * FROM proofTrackDemo');
-        res.json(result.recordset);
+        await submitProof(filePath, projectId, userId);
+        fs.unlinkSync(filePath);  // Delete temporary file
+        res.status(200).send({ message: "Proof submitted successfully." });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    } finally {
-        await closeDB();
+        console.error("Error submitting proof:", error);
+        res.status(500).send({ message: "An error occurred while submitting proof." });
+    }
+});
+
+/**
+ * Endpoint to retrieve all media files for a specific project and user
+ */
+app.get('/media/:userId/:projectId', async (req, res) => {
+    const { userId, projectId } = req.params;
+
+    try {
+        // Retrieve the media files
+        const mediaFiles = await getMediaFiles(userId, projectId);
+
+        res.status(200).json({
+            success: true,
+            message: "Media files retrieved successfully",
+            files: mediaFiles.map(file => ({
+                fileName: file.fileName,
+                fileData: file.data.toString('base64') // Convert binary data to base64 for JSON transport
+            }))
+        });
+    } catch (error) {
+        console.error("Error retrieving media files:", error);
+        res.status(500).json({ success: false, message: "Failed to retrieve media files" });
     }
 });
 
@@ -235,10 +275,7 @@ app.put('/updateProject', async (req, res) => {
     }
 });
 
-
-
 const PORT = process.env.PORT || 3000;
-console.log(PORT)
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
