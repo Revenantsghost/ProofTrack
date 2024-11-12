@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable} from 'react-native';
 import { UserContext } from './_layout';
 import { User } from '../types';
+import { router } from 'expo-router';
 
 //const user: User = useContext(UserContext);
 //const DATA = [];
@@ -48,6 +49,7 @@ export default function ProjectList() {
    * @param {Object} item - The item data for the pressed row.
    */
   const handlePress = (item: any) => {
+    //router.navigate('');
     alert(`You pressed: ${item.title}`);
   };
 
