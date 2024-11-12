@@ -1,18 +1,40 @@
-import React, { useContext } from 'react';
-import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable} from 'react-native';
+import React, { useContext, useState} from 'react';
+import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable,} from 'react-native';
 import { UserContext } from './_layout';
 import { User } from '../types';
 import { router } from 'expo-router';
 
-//const user: User = useContext(UserContext);
-//const DATA = [];
+const user: User = useContext(UserContext);
 
-const projects = [
+const [projects, setProjects] = useState([
   { id: '1', title: 'Item 1' },
-  { id: '2', title: 'Item 2' },
-  { id: '3', title: 'Item 3' },
-  { id: '4', title: 'Item 4' },
-];
+]);
+
+fetch(`http://localhost:3000/fetchProjects?user_id=${user.userID}`, {
+  method: 'GET',
+  headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
+})
+.then(response => {
+  if (response.ok) {
+    response.json().then(data => {
+      const fetchedProjects = data.map((p: { proj_id: any; project_name: any; }) => ({
+        id: p.proj_id,
+        title: p.project_name,
+      }))
+      setProjects([...projects, ...fetchedProjects]);
+    }).catch(error => {
+        console.log(response)
+        console.error('Error parsing JSON:', error);
+    });
+  } else {
+    console.log(response)
+      throw new Error('User not found or server error');
+  }
+})
+.catch(error => {
+  console.error('Error fetching profile:', error);
+});
+
 
 /**
  * Renders an individual item row in the list.
