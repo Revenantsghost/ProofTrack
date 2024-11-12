@@ -6,6 +6,7 @@ describe('API Endpoints', () => {
     let user_id;
     let user = "Tony"
     let project_name = "Test Project"
+    let proj_id;
 
     test('POST /register - Create new user', async () => {
         const response = await request(app)
@@ -15,7 +16,6 @@ describe('API Endpoints', () => {
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('user_id');
         user_id = response.body.user_id;
-        expect(response.body.user_id).toBe(1);
     });
 
     test('GET /fetchProfile - Return Profile', async () => {
@@ -33,6 +33,7 @@ describe('API Endpoints', () => {
             .send({"user_id": user_id, "project_name": project_name});
 
         expect(response.status).toBe(201);
+        proj_id = response.body.proj_id
         expect(response.body.proj_id).toBe(1);
     });
 
@@ -43,16 +44,21 @@ describe('API Endpoints', () => {
         expect(response.status).toBe(200);
     });
 
-    test('get /fetchProjects - Update Profile', async () => {
+    test('get /fetchProjects - fetch Projects', async () => {
         const response = await request(app)
-            .get(`/fetchProjects?user_id=${1}`)
+            .get(`/fetchProjects?user_id=${user_id}`)
         expect(response.status).toBe(200);
-        console.log(response.body)
         //console.log(response)
         expect(response.body[0]).toHaveProperty('proj_id', 1);
-        expect(response.body[0]).toHaveProperty('project_name', "name1");
-        expect(response.body[1]).toHaveProperty('proj_id', 2);
-        expect(response.body[1]).toHaveProperty('project_name', "name2");
+        expect(response.body[0]).toHaveProperty('project_name', project_name);
 
+    });
+
+    test('get /fetchProject - fetch Project', async () => {
+        const response = await request(app)
+            .get(`/fetchProject?user_id=${user_id}&proj_id=${proj_id}`)
+        expect(response.status).toBe(200);
+        //console.log(response)
+        expect(response.body).toHaveProperty('project_name', project_name);
     });
 });
