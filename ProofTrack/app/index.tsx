@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { User } from './types';
 
+/* Renders a login page that users have to login to.
+ * (Currently it accepts any input as a login) */
 export default function index() {
   const [userID, setUserID] = useState('');
   const [password, setPassword] = useState('');
@@ -19,8 +20,7 @@ export default function index() {
       // Right now I've switched the username and userID params for demonstration.
       // In actuality, you'll enter your userID in the first text bar, not your username.
       // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
-      setUserID('');
-      setPassword('');
+
       router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
       // The commented-out line is the one that will behave correctly.
       //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
@@ -41,7 +41,6 @@ export default function index() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4A90E2',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
