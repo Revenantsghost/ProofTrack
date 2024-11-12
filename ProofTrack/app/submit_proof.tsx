@@ -17,7 +17,7 @@ const projects = [
 /* Renders a single pressable project.
  * Upon pressing it, the user is directed to the camera usage app. */
 const ItemRow = ({ item }: any) => (
-  <Pressable onPress={() => router.navigate('./upload_media')} style={styles.item}>
+  <Pressable onPress={() => router.navigate('./media_options')} style={styles.item}>
     <Text style={styles.title}>{item.title}</Text>
   </Pressable>
 );

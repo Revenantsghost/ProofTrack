@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { UserContext } from './(tabs)/_layout';
 import { User } from './types';
@@ -6,11 +6,21 @@ import { Camera, CameraType, CameraView, useCameraPermissions } from "expo-camer
 import * as MediaLibrary from 'expo-media-library';
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
+
 export default function UploadMedia() {
   const user: User = useContext(UserContext);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [image, setImage] = useState(null);
+  const [isCameraReady, setIsCameraReady] = useState(false); // To check if camera is ready
+
+  useEffect(() => {
+    if (permission?.granted === false) {
+      // Handle case where permission is not granted
+      requestPermission();
+    }
+  }, [permission]);
+  
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
