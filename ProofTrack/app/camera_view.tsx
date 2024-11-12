@@ -4,14 +4,15 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { UserContext } from './(tabs)/_layout';
 import { User } from './types';
 import { Camera, CameraMode, CameraType, CameraView, FlashMode, useCameraPermissions } from "expo-camera";
-import * as MediaLibrary from 'expo-media-library';
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 import CameraActions from "@/components/CameraActions";
 import PictureView from "@/components/PictureView";
-import { router } from "expo-router";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CameraTools from "@/components/CameraTools";
+
+// This is the page that displays the camera, ready for the user to take the photo
+// also displays all of the camera tools
 
 export default function UploadMedia() {
   const user: User = useContext(UserContext);
