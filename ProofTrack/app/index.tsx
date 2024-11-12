@@ -50,7 +50,7 @@ export default function index() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={handleLogin}>
+      <Pressable style={styles.button} onPress={() => {handleLogin()}}>
         <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
     </View>

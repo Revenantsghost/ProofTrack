@@ -42,6 +42,9 @@ export default function Profile() {
         <Text style={styles.leftText}>Projects</Text>
         <Text style={styles.rightText}>{user.numProjects}</Text>
       </View>
+      <View style={{ top: 300 }} >
+        <Link href='.././' style={styles.titleText}>{"Logout?"}</Link>
+      </View>
     </View> 
   );
 }
