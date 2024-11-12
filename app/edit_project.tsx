@@ -1,15 +1,27 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { Project } from './types';
 
-const project = {
+
+const data = {
   name: 'Project ProofTrack',
+  projID: '1',
   checkpointFrequency: 'Weekly',
   duration: '3 months',
   images: [
     'https://via.placeholder.com/150',
     'https://via.placeholder.com/150',
     'https://via.placeholder.com/150',
-  ],
+  ]
+};
+
+const project = {
+  name: 'Study biology for an hour',
+  projID:'2',
+  checkpointFrequency: 'Every 30 min',
+  duration:'12/10/2024',
+  images: []
 };
 
 export default function EditProject() {
@@ -84,3 +96,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
   },
 });
+
+function parseProject(): Project| undefined {
+  const { userID, projID } = useLocalSearchParams();
+  // Ensure the passed parameters are all strings.
+  if (typeof(userID) !== 'string'
+                                    || typeof(projID) !== 'string') {
+    // Undefined signals an error to the caller.
+    return undefined;
+  }
+  // Ensure we were able to parse numbers out of userID and projID.
+  const user_ID: number = parseFloat(userID as string);
+  const proj_ID: number = parseFloat(projID as string);
+if (Number.isNaN(user_ID) || Number.isNaN(proj_ID)) {
+    // Undefined signals an error to the caller.
+    return undefined;
+  }
+  const project: Project = {
+    userID: user_ID,
+    projID: proj_ID,
+  }
+  console.log(userID);
+  console.log(projID)
+  return project;
+}

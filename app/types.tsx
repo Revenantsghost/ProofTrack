@@ -7,3 +7,8 @@ export type User = {
   /* The number of projects the user has started. */
   numProjects: number
 }
+
+export type Project = {
+  userID: number,
+  projID: number
+}

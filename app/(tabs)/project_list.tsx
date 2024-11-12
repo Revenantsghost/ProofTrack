@@ -1,13 +1,17 @@
-import React, { useContext, useState} from 'react';
+import React, { createContext, useContext, useState} from 'react';
 import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable,} from 'react-native';
 import { UserContext } from './_layout';
-import { User } from '../types';
+import { Project, User } from '../types';
 import { router } from 'expo-router';
+import { create } from 'react-test-renderer';
 
 const user: User = useContext(UserContext);
 
 const [projects, setProjects] = useState([
-  { id: '1', title: 'Item 1' },
+  { projID: '2', title: 'Study biology for an hour'},
+  { projID: '3',  title: 'Lose 20lb before the Summer'},
+  { projID: '4', title: 'Run on the treadmill for 30min'},
+  { projID: '5', title: 'Clean my room'}
 ]);
 
 fetch(`http://localhost:3000/fetchProjects?user_id=${user.userID}`, {
@@ -71,15 +75,15 @@ export default function ProjectList() {
    * @param {Object} item - The item data for the pressed row.
    */
   const handlePress = (item: any) => {
-    //router.navigate('');
-    alert(`You pressed: ${item.title}`);
+    router.navigate(`../edit_project?userID=${user.userID}&projID=${item.id}`);
+    //alert(`You pressed: ${item.title}`);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={projects}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.projID}
         renderItem={({ item }) => (
           <ItemRow item={item} onPress={handlePress} />
         )}
@@ -88,6 +92,7 @@ export default function ProjectList() {
     </SafeAreaView>
   );
 }
+
 
 /**
  * Styles for components.

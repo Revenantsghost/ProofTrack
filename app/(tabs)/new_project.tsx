@@ -54,7 +54,7 @@ export default function Index() {
         value={projectName}
         onChangeText={setProjectName}
       />
-      
+
       <View style={styles.dropdownContainer}>
       <Text style={styles.label}>Notification Frequency:</Text>
       <Picker
@@ -69,7 +69,7 @@ export default function Index() {
         <Picker.Item label="Biweekly" value="biweekly" />
         <Picker.Item label="Monthly" value="monthly" />
       </Picker>
-      </View> 
+      </View>
 
       {/* Notification Frequency Dropdown */}
       {/* <View style={styles.dropdownContainer}>
