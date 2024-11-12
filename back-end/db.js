@@ -22,4 +22,13 @@ async function connectToDB() {
     }
 }
 
-module.exports = { connectToDB, sql };
+async function closeDB() {
+    try {
+        await sql.close();
+    } catch (err) {
+        console.error('Database close failed', err);
+        throw err;
+    }
+}
+
+module.exports = { connectToDB, sql, closeDB };
