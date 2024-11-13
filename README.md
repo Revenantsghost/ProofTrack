@@ -2,6 +2,9 @@
 
 UW CSE403 Project
 
+Current Operational User Cases:
+Current Users updating and submitting to their project.
+
 Summary
 - The goal of this app is to provide a productivity platform that requires users to capture pictures and/or videos of their practice sessions to hold themselves accountable.
 - This would prevent users from forming new habits without following through with them.
