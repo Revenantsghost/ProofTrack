@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Alert, Button } from 'react-native';
 import { Image } from 'expo-image';
 import ImageViewer from "@/components/ImageViewer";
-import Button from '@/components/Button';
+/* This different usage of button broke things. */
+// import Button from '@/components/Button';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { router } from 'expo-router';
@@ -53,7 +54,11 @@ export default function media_options() {
             Alert.alert("Error", "Please choose or take a photo before submitting.");
           } else {
             Alert.alert("Success", "Photo submitted successfully!");
-            router.navigate('/');
+            /* Right now, it's set to router.back().
+             * If we do router.navigate, it causes an error because currently
+             * _layout.tsx requires params in router.navigate().
+             * This can be changed back to navigate if local params are provided. */
+            router.back();
           }
     };
 
@@ -63,9 +68,15 @@ export default function media_options() {
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         </View>
         <View style={styles.footerContainer}>
-          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          <Button theme="secondary" label="Take a photo" onPress={takePictureAsync} />
-          <Button label="Submit" onPress={onSubmit} />
+          <View style={{bottom: 110, position: "absolute"}}>
+            <Button title="Choose a photo" onPress={pickImageAsync} />
+          </View>
+          <View style={{bottom: 70, position: "absolute"}}>
+            <Button title="Take a photo" onPress={takePictureAsync} />
+          </View>
+          <View style={{bottom: 30, position: "absolute"}}>
+            <Button title="Submit" onPress={onSubmit} />
+          </View>
         </View>
       </View>
     );
@@ -84,7 +95,7 @@ const styles = StyleSheet.create({
       flex: 1 / 3,
       alignItems: 'center',
       paddingTop: 20,
-      bottom: 70,
+      bottom: 0,
       position: 'absolute',
   },
 });
