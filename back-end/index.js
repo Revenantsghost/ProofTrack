@@ -12,9 +12,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const upload = multer({ dest: "uploads/" }); // temp upload location
+ const upload = multer({ dest: "uploads/" }); // temp upload location
 
-const { submitProof } = require("./mediaInteraction.js");
+ const { submitProof } = require("./mediaInteraction.js");
 
 // Endpoint to submit proof
 app.post("/submit-proof", upload.single("file"), async (req, res) => {

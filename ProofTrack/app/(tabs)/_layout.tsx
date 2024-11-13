@@ -5,7 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs, useLocalSearchParams } from 'expo-router';
 import { User } from '../types';
 
-// Change this username here!
+// This is a default user, but said context should be overwritten by local search params.
 const defaultUser: User = { username: "User", userID: 0, numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
@@ -14,11 +14,11 @@ export const UserContext = createContext(defaultUser);
  * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
   const user: User | undefined = parseUser();
-  if (user === undefined) {
+if (user === undefined) {
     Alert.alert("Unexpected error occured when retrieving your information.");
     // It may look strange, but this is what's necessary to redirect to ../index.tsx!
     // Upon error, this redirects the user back to the login page.
-    return <Redirect href='.././' />
+    return <Redirect href='../login' />
   }
 
   return (
@@ -89,16 +89,16 @@ function parseUser(): User | undefined {
     return undefined;
   }
   // Ensure we were able to parse numbers out of userID and numProjects.
-  const user_ID: number = parseFloat(userID as string);
-  const num_projects: number = parseFloat(numProjects as string);
-if (Number.isNaN(user_ID) || Number.isNaN(num_projects)) {
+  const parsed_ID: number = parseFloat(userID as string);
+  const parsed_projects: number = parseFloat(numProjects as string);
+if (Number.isNaN(parsed_ID) || Number.isNaN(parsed_projects)) {
     // Undefined signals an error to the caller.
     return undefined;
   }
   const user: User = {
     username: username as string,
-    userID: user_ID,
-    numProjects: num_projects,
+    userID: parsed_ID,
+    numProjects: parsed_projects,
   }
   return user;
 }
