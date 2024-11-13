@@ -1,7 +1,7 @@
 import React, {useContext } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { UserContext } from './_layout';
 import { User } from '../types';
 
@@ -43,7 +43,9 @@ export default function Profile() {
         <Text style={styles.rightText}>{user.numProjects}</Text>
       </View>
       <View style={{ top: 300 }} >
-        <Link href='.././' style={styles.titleText}>{"Logout?"}</Link>
+        <Pressable onPress={() => (router.replace('../login'))}>
+          <Text style={styles.titleText}>Logout?</Text>
+        </Pressable>
       </View>
     </View> 
   );
