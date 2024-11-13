@@ -57,7 +57,7 @@ How to install/run the software:
   
     Install Dependencies: Install all project dependencies by running: npm install
 
- 3. Running the Project
+Running the Project:
 
     Start the Expo Development Server: To start the Expo server, run: npx expo start
 
@@ -65,6 +65,17 @@ How to install/run the software:
 
     Open Expo Go, scan the QR code in the browser tab, and the app should launch on your device.
 
+How to use the app:
+
+Once a user opens up the app, they will see a login page, where one is able to make a new account or login to their existing account by inputting a username and password. After sucessfully logging in, a user will be taken to the homepage with the welcome screen. 
+
+To create a new project, go to the New Project tab, where a user can fill out the fields to create a new project. Pressing the create button will make a new project. 
+
+To view existing projects, go to the Projects tab, where users can see all of their projects, as well as any proof they submitted for a specific project. 
+
+To look at a user's profile, go to the Profile tab, where a user is able to edit their username or password, and see some statistics like the number of projects, as well as being able to logout of their account and return to the Login page. 
+
+The homepage also includes a blue button with a camera icon, which leads to the page where a user can submit proof. Select the project you would like to submit proof for. Then choose whether you would like to upload media from your library on your device, or take a photo/video in the app to use. After uploading your medi, it should be visible on the page, and a user can press the submit button to successfully submit proof of their progress on their project!
 
 
 How to report a bug:
