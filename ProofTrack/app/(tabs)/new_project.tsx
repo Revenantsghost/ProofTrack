@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView, SafeAreaView } from 'react-native';
 import { UserContext } from './_layout';
 import { User } from '../types';
-// import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
+import { format } from 'date-fns';
 
 
 export default function Index() {
@@ -12,14 +12,6 @@ export default function Index() {
   const [projectName, setProjectName] = useState('');
   const [open, setOpen] = useState(false);
   const [notificationFrequency, setNotificationFrequency] = useState('null');
-  const [items, setItems] = useState([
-    { label: 'Every 30 minutes', value: '30min' },
-    { label: 'Hourly', value: 'hourly' },
-    { label: 'Daily', value: 'daily' },
-    { label: 'Weekly', value: 'weekly' },
-    { label: 'Biweekly', value: 'biweekly' },
-    { label: 'Monthly', value: 'monthly' },
-  ]);
   const [reminderDays, setReminderDays] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -45,6 +37,10 @@ export default function Index() {
     );
   };
 
+  const formatDate = (date: Date | null) => {
+    return date ? format(date, 'MMM dd, yyyy') : 'Pick a Date';
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Project Name:</Text>
@@ -56,36 +52,20 @@ export default function Index() {
       />
       
       <View style={styles.dropdownContainer}>
-      <Text style={styles.label}>Notification Frequency:</Text>
-      <Picker
-        selectedValue={notificationFrequency}
-        onValueChange={(itemValue) => setNotificationFrequency(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Every 30 minutes" value="30min" />
-        <Picker.Item label="Hourly" value="hourly" />
-        <Picker.Item label="Daily" value="daily" />
-        <Picker.Item label="Weekly" value="weekly" />
-        <Picker.Item label="Biweekly" value="biweekly" />
-        <Picker.Item label="Monthly" value="monthly" />
-      </Picker>
+        <Text style={styles.label}>Notification Frequency:</Text>
+        <Picker
+          selectedValue={notificationFrequency}
+          onValueChange={(itemValue) => setNotificationFrequency(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Every 30 minutes" value="30min" />
+          <Picker.Item label="Hourly" value="hourly" />
+          <Picker.Item label="Daily" value="daily" />
+          <Picker.Item label="Weekly" value="weekly" />
+          <Picker.Item label="Biweekly" value="biweekly" />
+          <Picker.Item label="Monthly" value="monthly" />
+        </Picker>
       </View> 
-
-      {/* Notification Frequency Dropdown */}
-      {/* <View style={styles.dropdownContainer}>
-        <Text style={styles.label}>Notification Frequency</Text>
-        <DropDownPicker
-          open={open}
-          value={notificationFrequency}
-          items={items}
-          setOpen={setOpen}
-          setValue={setNotificationFrequency}
-          setItems={setItems}
-          style={styles.dropdown}
-          placeholder="Select frequency"
-          containerStyle={{ marginVertical: 10 }}
-        />
-      </View> */}
 
       <Text style={styles.label}>Reminder Days:</Text>
       <View style={styles.daysContainer}>
@@ -98,38 +78,48 @@ export default function Index() {
         ))}
       </View>
 
-      <Text style={styles.label}>Start Date:</Text>
-      <Button title="Pick Start Date" onPress={() => setStartDatePickerVisibility(true)} />
-      <DateTimePickerModal
-        isVisible={isStartDatePickerVisible}
-        mode="date"
-        onConfirm={(date) => {
-          setStartDate(date);
-          setStartDatePickerVisibility(false);
-        }}
-        onCancel={() => setStartDatePickerVisibility(false)}
-      />
+      <View>
+        <Text style={styles.label}>Start Date:</Text>
+        <Button
+          title={startDate ? formatDate(startDate) : "Pick Start Date"}
+          onPress={() => setStartDatePickerVisibility(true)}
+        />
+        <DateTimePickerModal
+          isVisible={isStartDatePickerVisible}
+          mode="date"
+          onConfirm={(date) => {
+            setStartDate(date);
+            setStartDatePickerVisibility(false);
+          }}
+          onCancel={() => setStartDatePickerVisibility(false)}
+        />
 
-      <Text style={styles.label}>End Date (optional):</Text>
-      <View style={styles.endDateToggle}>
-        <TouchableOpacity onPress={() => setHasEndDate(!hasEndDate)}>
-          <Text style={styles.toggleText}>
-            {hasEndDate ? 'Switch to Infinite' : 'Set End Date'}
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.label}>End Date (optional):</Text>
+        <View style={styles.endDateToggle}>
+          <TouchableOpacity onPress={() => setHasEndDate(!hasEndDate)}>
+            <Text style={styles.toggleText}>
+              {hasEndDate ? 'Switch to Infinite' : 'Set End Date'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {hasEndDate && (
+          <Button
+            title={endDate ? formatDate(endDate) : "Pick End Date"}
+            onPress={() => setEndDatePickerVisibility(true)}
+          />
+        )}
+
+        <DateTimePickerModal
+          isVisible={isEndDatePickerVisible}
+          mode="date"
+          onConfirm={(date) => {
+            setEndDate(date);
+            setEndDatePickerVisibility(false);
+          }}
+          onCancel={() => setEndDatePickerVisibility(false)}
+        />
       </View>
-      {hasEndDate && (
-        <Button title="Pick End Date" onPress={() => setEndDatePickerVisibility(true)} />
-      )}
-      <DateTimePickerModal
-        isVisible={isEndDatePickerVisible}
-        mode="date"
-        onConfirm={(date) => {
-          setEndDate(date);
-          setEndDatePickerVisibility(false);
-        }}
-        onCancel={() => setEndDatePickerVisibility(false)}
-      />
 
       <TouchableOpacity style={styles.createButton} onPress={handleCreateProject}>
         <Text style={styles.createButtonText}>Create</Text>
@@ -154,21 +144,25 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
-    marginBottom: 15,
-  },
-  label: {
-    marginTop: 10,
+    marginTop: 5,
+    marginBottom: 5,
     fontSize: 16,
   },
+  label: {
+    marginTop: 7,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   picker: {
-    height: 50,
+    height: 100,
     width: '100%',
-    marginBottom: 15,
+    marginBottom: 35,
   },
   daysContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 15,
+    marginTop: 5,
+    marginBottom: 5,
   },
   day: {
     padding: 8,
@@ -184,7 +178,9 @@ const styles = StyleSheet.create({
   endDateToggle: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    marginBottom: 10,
+    marginTop: 1,
+    marginBottom: 5,
+    marginVertical: 10,
   },
   toggleText: {
     color: '#007BFF',
@@ -199,15 +195,12 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   dropdownContainer: {
     width: '100%',
-  },
-  dropdown: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    color: '#D3D3D3',
+    marginBottom: 60,
+    marginTop: 5,
   },
 });
