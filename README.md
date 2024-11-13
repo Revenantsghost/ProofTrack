@@ -121,7 +121,7 @@ Build Instructions for ProofTrack:
 - Testing on a Physical Device: Open Expo Go, scan the QR code in the browser tab, and the app should launch on your device.
 
 
-To run the system’s test cases, first go into either the ProofTrack (to test frontend, "cd ProofTrack") or back-end folder (to test back-end, "cd back-end"), and then run the command: “npm run test” in the terminal. Another way to test is by debugging directly in the package.json file in VSCode. Frontend testing also includes testing the functionality of components in the ExpoGo app. To add tests, add another test file in the __tests__/ directory in the ProofTrack directory for frontend tests and add a file in the tests directory for backend tests.
+To run the system’s test cases, first go into either the ProofTrack (to test frontend, "cd ProofTrack") or back-end folder (to test back-end, "cd back-end"). If you have not installed the necessary dependencies yet, run "npm install" in the folder. Then run the command: “npm run test” in the terminal. Another way to test is by debugging directly in the package.json file in VSCode. Frontend testing also includes testing the functionality of components in the ExpoGo app. To add tests, add another test file in the __tests__/ directory in the ProofTrack directory for frontend tests and add a file in the tests directory for backend tests. (Note: some backend tests may not work since they rely on the .env file to access the Azure database, which have been removed for security purposes.)
 
 
 Both frontend and backend utilize jest for testing. Test file naming conventions as of right now, we have one test suite for all components. This includes very basic naming conventions.
