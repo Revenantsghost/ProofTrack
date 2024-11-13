@@ -6,7 +6,7 @@ import { Tabs, useLocalSearchParams } from 'expo-router';
 import { User } from '../types';
 
 // This is a default user, but said context should be overwritten by local search params.
-const defaultUser: User = { username: "User", userID: 0, numProjects: 0 };
+const defaultUser: User = { username: "User", userID: "beta", numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
 /* To render the tab layout of our app.
@@ -88,16 +88,15 @@ function parseUser(): User | undefined {
     // Undefined signals an error to the caller.
     return undefined;
   }
-  // Ensure we were able to parse numbers out of userID and numProjects.
-  const parsed_ID: number = parseFloat(userID as string);
+  // Ensure we were able to parse number out of numProjects.
   const parsed_projects: number = parseFloat(numProjects as string);
-if (Number.isNaN(parsed_ID) || Number.isNaN(parsed_projects)) {
+if (Number.isNaN(parsed_projects)) {
     // Undefined signals an error to the caller.
     return undefined;
   }
   const user: User = {
     username: username as string,
-    userID: parsed_ID,
+    userID: userID as string,
     numProjects: parsed_projects,
   }
   return user;

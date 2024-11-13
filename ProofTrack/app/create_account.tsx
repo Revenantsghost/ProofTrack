@@ -3,20 +3,28 @@ import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
 
-/* Renders a login page that users have to login to.
- * (Currently it accepts any input as a login) */
-export default function Login() {
+/* Renders a "Create Account" page. */
+export default function CreateAccount() {
+  const [username, setUsername] = useState('');
   const [userID, setUserID] = useState('');
+  /* Password and PasswordConfirm MUST be equal. */
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  const handleLogin = () => {
-    if (userID && password) {
+  const handleCreation = () => {
+    // Also include a check if the UserID is available.
+    if (password !== passwordConfirm) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    if (username && userID && password) {
       // Perform login action.
-      const username: string = userID;
-      Alert.alert('Login Successful', `Welcome, ${username}!`);
+      Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
       /* Main idea: Fetch the user's information using their unique ID.
        * Then pass said information to the router as its parameters. */
       // Currently, things are just hardcoded in.
+
       //const username: string = userID;
       const numProjects: number = 4;
 
@@ -34,8 +42,17 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Create Your Account</Text>
 
+      <Text style={{fontSize: 20, textAlign: "center" }}>Username</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      <Text style={{fontSize: 20, textAlign: "center" }}>User ID</Text>
       <TextInput
         style={styles.input}
         placeholder="User ID"
@@ -43,6 +60,7 @@ export default function Login() {
         onChangeText={setUserID}
         autoCapitalize="none"
       />
+      <Text style={{fontSize: 20, textAlign: "center" }}>Password</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -50,14 +68,22 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
+      <Text style={{fontSize: 20, textAlign: "center" }}>Confirm Password</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={passwordConfirm}
+        onChangeText={setPasswordConfirm}
+        secureTextEntry
+      />
 
-      <Pressable style={styles.button} onPress={() => {handleLogin()}}>
-        <Text style={styles.buttonText}>Log In</Text>
+      <Pressable style={styles.button} onPress={() => {handleCreation()}}>
+        <Text style={styles.buttonText}>Create Account</Text>
       </Pressable>
 
       <Button
-        onPress={() => {router.replace('./create_account')}}
-        title='New user? Create account'
+        onPress={() => {router.replace('./login')}}
+        title='Already own an account? Log in!'
       />
     </View>
   );

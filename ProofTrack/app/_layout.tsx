@@ -17,6 +17,7 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Main" }} />
       <Stack.Screen name="submit_proof" options={{ headerShown: true, title: "Submit Proof" }} />
       <Stack.Screen name="login" options={{headerShown: true, title: "Login"}} />
+      <Stack.Screen name="create_account" options={{headerShown: true, title: "Login"}}/>
     </Stack>
   );
 }
