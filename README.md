@@ -85,7 +85,7 @@
     ```bash
     npx expo start
     ```
-    - Open the new tab in your browser and scan the QR code with the **Expo Go** app.
+    - Open the new tab in your browser and scan the QR code with the **Expo Go** app or camera for IOS.
 
 ---
 
