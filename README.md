@@ -34,7 +34,6 @@
 
 ## **Current Practice**
 
-- This app is similar to **Alarmy**, an alarm clock that requires the user to prove they are awake by completing “missions” before the alarm can be dismissed.
 - Other apps use monetary commitments or community review to ensure that users meet their goals. **ProofTrack** offers similar benefits without the pressure of monetary costs or social expectations.
 
 ---
