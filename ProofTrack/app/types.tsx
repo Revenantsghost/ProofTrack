@@ -1,9 +1,15 @@
 /* Basic information on a user. */
 export type User = {
-  /* A user's username, such as "Kyle", "Anmol", or "Charles". */
+  /* A user's UNIQUE username, such as "Kyle", "Anmol", or "Charles". */
   username: string,
-  /* A user's UNIQUE ID number. */
-  userID: string,
   /* The number of projects the user has started. */
-  numProjects: number
+  numProjects: number,
+}
+
+/* Basic information on a project. */
+export type Project = {
+  /* The username of the user who owns this project. */
+  username: string,
+  /* A project's UNIQUE ID number. */
+  projID: number,
 }

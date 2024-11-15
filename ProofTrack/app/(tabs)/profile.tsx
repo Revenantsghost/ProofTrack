@@ -1,5 +1,5 @@
 import React, {useContext } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import { UserContext } from './_layout';
@@ -42,10 +42,13 @@ export default function Profile() {
         <Text style={styles.leftText}>Projects</Text>
         <Text style={styles.rightText}>{user.numProjects}</Text>
       </View>
-      <View style={{ top: 300 }} >
-        <Pressable onPress={() => (router.replace('../login'))}>
-          <Text style={styles.titleText}>Logout?</Text>
-        </Pressable>
+      <View style={{ top: 310 }}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => (router.replace('../login'))}
+        >
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
       </View>
     </View> 
   );
@@ -91,4 +94,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#4A90E2",
   },
+  logoutButton: {
+    elevation: 8,
+    backgroundColor: '#CD001A',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginLeft: 30,
+    marginRight: 30,
+    marginBottom: 40,
+  },
+  buttonText: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+  }
 });

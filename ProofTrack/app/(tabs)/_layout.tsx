@@ -6,7 +6,7 @@ import { Tabs, useLocalSearchParams } from 'expo-router';
 import { User } from '../types';
 
 // This is a default user, but said context should be overwritten by local search params.
-const defaultUser: User = { username: "User", userID: "beta", numProjects: 0 };
+const defaultUser: User = { username: "User", numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
 /* To render the tab layout of our app.
@@ -14,7 +14,7 @@ export const UserContext = createContext(defaultUser);
  * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
   const user: User | undefined = parseUser();
-if (user === undefined) {
+  if (user === undefined) {
     Alert.alert("Unexpected error occured when retrieving your information.");
     // It may look strange, but this is what's necessary to redirect to ../index.tsx!
     // Upon error, this redirects the user back to the login page.
@@ -81,10 +81,9 @@ if (user === undefined) {
  * Returns a User record type containing said information.
  * Returns undefined if there's an error parsing the params. */
 function parseUser(): User | undefined {
-  const { username, userID, numProjects } = useLocalSearchParams();
+  const { username, numProjects } = useLocalSearchParams();
   // Ensure the passed parameters are all strings.
-  if (typeof(username) !== 'string' || typeof(userID) !== 'string'
-                                    || typeof(numProjects) !== 'string') {
+  if (typeof(username) !== 'string' || typeof(numProjects) !== 'string') {
     // Undefined signals an error to the caller.
     return undefined;
   }
@@ -96,7 +95,6 @@ if (Number.isNaN(parsed_projects)) {
   }
   const user: User = {
     username: username as string,
-    userID: userID as string,
     numProjects: parsed_projects,
   }
   return user;

@@ -6,35 +6,27 @@ import { StyleSheet, Alert, Button } from 'react-native';
 /* Renders a "Create Account" page. */
 export default function CreateAccount() {
   const [username, setUsername] = useState('');
-  const [userID, setUserID] = useState('');
   /* Password and PasswordConfirm MUST be equal. */
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const handleCreation = () => {
-    // Also include a check if the UserID is available.
+    // Also include a check if the Username is available.
     if (password !== passwordConfirm) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
 
-    if (username && userID && password) {
+    if (username && password) {
       // Perform login action.
       Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
       /* Main idea: Fetch the user's information using their unique ID.
        * Then pass said information to the router as its parameters. */
       // Currently, things are just hardcoded in.
 
-      //const username: string = userID;
       const numProjects: number = 4;
 
-      // Right now I've switched the username and userID params for demonstration.
-      // In actuality, you'll enter your userID in the first text bar, not your username.
-      // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
-
-      router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
-      // The commented-out line is the one that will behave correctly.
-      //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
+      router.replace(`./(tabs)/?username=${username}&numProjects=${numProjects}`);
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }
@@ -50,14 +42,6 @@ export default function CreateAccount() {
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <Text style={{fontSize: 20, textAlign: "center" }}>User ID</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="User ID"
-        value={userID}
-        onChangeText={setUserID}
         autoCapitalize="none"
       />
       <Text style={{fontSize: 20, textAlign: "center" }}>Password</Text>
