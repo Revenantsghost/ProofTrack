@@ -9,15 +9,15 @@ import { User } from '../types';
 const defaultUser: User = { username: "User", numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
-/* To render the tab layout of our app.
+/* Renders the tab layout of our app.
  * Also handles parsing user data sent here from login page.
  * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
   const user: User | undefined = parseUser();
   if (user === undefined) {
     Alert.alert("Unexpected error occured when retrieving your information.");
-    // It may look strange, but this is what's necessary to redirect to ../index.tsx!
-    // Upon error, this redirects the user back to the login page.
+    // This means the user's information couldn't be parsed/fetched properly.
+    // Rather than crash the app, we signal an error by logging the user out.
     return <Redirect href='../login' />
   }
 
