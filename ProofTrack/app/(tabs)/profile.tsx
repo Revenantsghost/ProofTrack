@@ -23,15 +23,12 @@ export default function Profile() {
       <View style={{ top: 50 }}>
         <Text style={styles.titleText}>{theirs} Profile</Text>
       </View>
-      { /* Row providing link to change username. */ }
-      <View style={{ top: 70 }}>
-        <Text style={styles.leftText}>Username</Text>
-        <Link href="../profile" style={styles.rightLink}>{"[Edit]"}</Link>
-      </View>
       { /* Row providing link to change password. */ }
       <View style={{ top: 120 }}>
         <Text style={styles.leftText}>Password</Text>
-        <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
+        <TouchableOpacity onPress={() => {alert("Not yet implemented!")}}>
+          <Text style={styles.rightLink}>{"[Edit]"}</Text>
+        </TouchableOpacity>
       </View>
       { /* User statistics header text. */ }
       <View style={{ top: 210 }}>
@@ -95,14 +92,12 @@ const styles = StyleSheet.create({
     color: "#4A90E2",
   },
   logoutButton: {
-    elevation: 8,
     backgroundColor: '#CD001A',
-    borderRadius: 10,
+    borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginLeft: 30,
     marginRight: 30,
-    marginBottom: 40,
   },
   buttonText: {
     fontSize: 20,
