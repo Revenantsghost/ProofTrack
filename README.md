@@ -5,7 +5,7 @@
 ---
 
 ## **Current Operational User Cases**
-- **Current Users** updating and submitting to their project.
+- **Current Users** updating and submitting to their project. Four current branches do this, login_page_beta1, new_submit_proof_branch, profile_page_beta1, and project_list_page_beta2. To view each branch, follow developer notes below.
 
 ---
 
@@ -117,15 +117,6 @@
 
 - **Source Code**: Located in the [ProofTrack GitHub repository](https://github.com/Revenantsghost/ProofTrack).
 
-## **Directory Structure**
-
-- `.expo/` - ExpoGo app configuration
-- `.github/workflows/` - GitHub workflows
-- `ProofTrack/` - Contains the main app files (layout, pages, components)
-- `backend/` - Backend files and scripts, including `blobservice.js` and `server.js`
-- `reports/` - Weekly team reports in `YYYYMMDD.md` format
-- **README.md**, **package-lock.json**, **.env** - Essential files for setup
-
 ## **Build Instructions**
 
 1. **Clone and Install Dependencies**:
@@ -133,6 +124,9 @@
     git clone https://github.com/Revenantsghost/ProofTrack.git
     cd ProofTrack
     npm install
+    npm install expo@latest
+    npx expo install --fix
+    npm install expo-router@3.5.23
     ```
 
 2. **Start the Expo Server**:
