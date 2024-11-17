@@ -36,7 +36,7 @@ export default function Login() {
 
       <TextInput
         style={styles.input}
-        placeholder="User ID"
+        placeholder="Username"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
