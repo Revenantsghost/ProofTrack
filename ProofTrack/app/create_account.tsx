@@ -31,7 +31,7 @@ export default function CreateAccount() {
        * This takes the user to the homepage. */
       router.replace(`./(tabs)/?username=${username}&numProjects=0`);
     } else {
-      Alert.alert('Error', 'Please enter both email and password.');
+      Alert.alert('Error', 'Please enter both username and password.');
     }
   };
 

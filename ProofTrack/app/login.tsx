@@ -21,12 +21,12 @@ export default function Login() {
        * Then pass said information to the router as its numProjects parameter.
        * Currently, numProjects is just hardcoded in. */
       const numProjects: number = 4;
-      Alert.alert('Login Successful', `Welcome, ${username}!`);
+      Alert.alert('Login Successful', `Welcome back, ${username}!`);
 
       /* Takes the user to the homepage. */
       router.replace(`./(tabs)/?username=${username}&numProjects=${numProjects}`);
     } else {
-      Alert.alert('Error', 'Please enter both email and password.');
+      Alert.alert('Error', 'Please enter both username and password.');
     }
   };
 
