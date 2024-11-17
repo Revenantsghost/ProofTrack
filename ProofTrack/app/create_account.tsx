@@ -3,30 +3,33 @@ import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
 
-/* Renders a "Create Account" page. */
+/* Renders a "Create Account" page.
+ * (Currently it accepts any non-empty input as long as passwords match) */
 export default function CreateAccount() {
+  /* The new user's unique username entered when creating an account. */
   const [username, setUsername] = useState('');
-  /* Password and PasswordConfirm MUST be equal. */
+  /* The new user's password entered when creating an account. */
   const [password, setPassword] = useState('');
+  /* Password and PasswordConfirm MUST be equal. */
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const handleCreation = () => {
-    // Also include a check if the Username is available.
+    // Also include a check if the username is available.
     if (password !== passwordConfirm) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
 
     if (username && password) {
-      // Perform login action.
+      // Create an account.
+
+      /* Main idea: Check the backend if the username already exists.
+       * If not, instruct the backend to create a new user entry. */
       Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-      /* Main idea: Fetch the user's information using their unique ID.
-       * Then pass said information to the router as its parameters. */
-      // Currently, things are just hardcoded in.
 
-      const numProjects: number = 4;
-
-      router.replace(`./(tabs)/?username=${username}&numProjects=${numProjects}`);
+      /* Since this is a new account, numProjects will be zero.
+       * This takes the user to the homepage. */
+      router.replace(`./(tabs)/?username=${username}&numProjects=0`);
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }

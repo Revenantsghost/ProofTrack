@@ -4,29 +4,27 @@ import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
 
 /* Renders a login page that users have to login to.
- * (Currently it accepts any input as a login) */
+ * (Currently it accepts any non-empty input as a successful login) */
 export default function Login() {
-  const [userID, setUserID] = useState('');
+  /* The username that's entered during a login attempt. */
+  const [username, setUsername] = useState('');
+  /* The password that's entered during a login attempt. */
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if (userID && password) {
+    if (username && password) {
       // Perform login action.
-      const username: string = userID;
-      Alert.alert('Login Successful', `Welcome, ${username}!`);
-      /* Main idea: Fetch the user's information using their unique ID.
-       * Then pass said information to the router as its parameters. */
-      // Currently, things are just hardcoded in.
-      //const username: string = userID;
+
+      /* Main idea: Check if the username exists.
+       * Then check if the entered password is correct.
+       * If successful, THEN fetch the user's numProjects information.
+       * Then pass said information to the router as its numProjects parameter.
+       * Currently, numProjects is just hardcoded in. */
       const numProjects: number = 4;
+      Alert.alert('Login Successful', `Welcome, ${username}!`);
 
-      // Right now I've switched the username and userID params for demonstration.
-      // In actuality, you'll enter your userID in the first text bar, not your username.
-      // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
-
-      router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
-      // The commented-out line is the one that will behave correctly.
-      //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
+      /* Takes the user to the homepage. */
+      router.replace(`./(tabs)/?username=${username}&numProjects=${numProjects}`);
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }
@@ -39,8 +37,8 @@ export default function Login() {
       <TextInput
         style={styles.input}
         placeholder="User ID"
-        value={userID}
-        onChangeText={setUserID}
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
