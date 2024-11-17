@@ -88,13 +88,14 @@ function parseUser(): User | undefined {
     return undefined;
   }
   // Ensure we were able to parse number out of numProjects.
-  const parsed_projects: number = parseFloat(numProjects as string);
-if (Number.isNaN(parsed_projects)) {
+  const parsed_projects: number = parseFloat(numProjects);
+  if (Number.isNaN(parsed_projects)) {
     // Undefined signals an error to the caller.
     return undefined;
   }
+  // Construct a User record type and return it.
   const user: User = {
-    username: username as string,
+    username: username,
     numProjects: parsed_projects,
   }
   return user;
