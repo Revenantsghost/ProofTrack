@@ -158,7 +158,7 @@ Code segments such as consts or components are prefaced by Javadoc-style comment
  * @returns {JSX.Element} A pressable item row component. <-- For example
  */
 ```
-And so...
+And so on...
 
 **Note**: Some backend tests require the `.env` file for Azure database access (excluded for security).
 
