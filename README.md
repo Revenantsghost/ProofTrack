@@ -145,6 +145,21 @@
         npm run test
         ```
 
+## **Documentation Format**
+**Frontend**
+Code segments such as consts or components are prefaced by Javadoc-style comments in the following format:
+```
+/**
+ * The leading line describes the function of const or component
+ *
+ * @param {PARAM_TYPE} PARAM_NAME - Param purpose and description
+ * @param {Function} onPress - Function to handle press events on the item. <-- For example
+ * @returns {RETURN_TYPE} Returned obj purpose
+ * @returns {JSX.Element} A pressable item row component. <-- For example
+ */
+```
+And so...
+
 **Note**: Some backend tests require the `.env` file for Azure database access (excluded for security).
 
 ---
