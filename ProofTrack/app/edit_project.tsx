@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Project } from './types';
+import { Project, ProjectInfo } from './types';
 
 /**
- * Parses project information from local search parameters.
+ * Parses project information from local search parameters. Furnishes params for endpoint
  *
- * @returns {Project | undefined} A `Project` object if parsing succeeds; otherwise, `undefined`.
+ * @returns {ProjectInfo | undefined} A `ProjectInfo` object if parsing succeeds; otherwise, `undefined`.
  */
-function parseProject(): Project | undefined {
+function parseProject(): ProjectInfo | undefined {
   const { userID, projID } = useLocalSearchParams();
 
   // Ensure the passed parameters are all strings.
@@ -16,14 +16,14 @@ function parseProject(): Project | undefined {
     return undefined;
   }
 
-  const user_ID: number = parseFloat(userID);
+  const user_ID = userID;
   const proj_ID: number = parseFloat(projID);
 
   if (Number.isNaN(user_ID) || Number.isNaN(proj_ID)) {
     return undefined;
   }
 
-  return { userID: user_ID, projID: proj_ID };
+  return { username: user_ID, projID: proj_ID };
 }
 
 export default function EditProject() {
@@ -33,7 +33,8 @@ export default function EditProject() {
   // Fetch project details on component mount.
   useEffect(() => {
     if (projInfo) {
-      fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.userID}&proj_id=${projInfo.projID}`, {
+      //Fetch project details, provide endpoint params using projInfo
+      fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -45,9 +46,10 @@ export default function EditProject() {
         })
         .then((data) => {
           const fetchedProject = {
+            username: data.username,
             name: data.project_name,
             projID: data.proj_id,
-            checkpointFrequency: data.checkpoint_frequency,
+            notificationFrequency: data.checkpoint_frequency,
             duration: data.duration,
             images: data.images,
           };
@@ -57,6 +59,8 @@ export default function EditProject() {
           console.error('Error fetching project data:', error);
         });
     }
+    //Fetch images
+    fetch("http://10.19.227.26:3000/media/"+projInfo?.username+"/"+projInfo?.projID)
   }, [projInfo]);
 
 //Display loading message as project info is fetched
@@ -77,7 +81,7 @@ export default function EditProject() {
       <View style={styles.detailsContainer}>
         <Text style={styles.detailText}>
           <Text style={styles.detailLabel}>Checkpoint Frequency: </Text>
-          {project.checkpointFrequency}
+          {project.notificationFrequency}
         </Text>
         <Text style={styles.detailText}>
           <Text style={styles.detailLabel}>Duration: </Text>
