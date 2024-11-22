@@ -17,13 +17,20 @@ export default function CreateAccount() {
     if (!(username && password && passwordConfirm)) {
       /* Make sure every field has an entry. */
       Alert.alert('Error', 'Please enter both username and passwords.');
+      return;
     } else if (password !== passwordConfirm) {
       /* Make sure "Password" and "Confirm Password" match. */
       Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+    
+    /* Attempt to create a user and send to backend.
+     * If false, the username was already taken. */
+    const sendAttempt: boolean = sendNewUser(username, password);
+    if (!sendAttempt) {
+      /* Make sure the username wasn't already taken. */
+      Alert.alert('Error', 'Username already taken.');
     } else {
-      /* Attempt to send the new user to the database.
-       * This will handle the case of a username being unavailable. */
-      sendNewUser(username, password);
       /* A friendly welcome message! */
       Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
       /* Since this is a new account, numProjects will be zero.
