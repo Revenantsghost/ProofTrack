@@ -239,7 +239,7 @@ async function getMediaFiles(userId, projectId) {
             const response = await axios.get(url, { responseType: 'arraybuffer' });
             return {
                 fileName: extractFileName(url), // Extract file name from URL for reference
-                data: response.data // Binary data of the file
+                url 
             };
         });
 
