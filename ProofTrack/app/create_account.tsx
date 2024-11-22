@@ -14,24 +14,21 @@ export default function CreateAccount() {
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const handleCreation = () => {
-    // Also include a check if the username is available.
-    if (password !== passwordConfirm) {
+    if (!(username && password && passwordConfirm)) {
+      /* Make sure every field has an entry. */
+      Alert.alert('Error', 'Please enter both username and passwords.');
+    } else if (password !== passwordConfirm) {
+      /* Make sure "Password" and "Confirm Password" match. */
       Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-
-    if (username && password) {
-      // Create an account.
-
-      /* Main idea: Check the backend if the username already exists.
-       * If not, instruct the backend to create a new user entry. */
+    } else {
+      /* Attempt to send the new user to the database.
+       * This will handle the case of a username being unavailable. */
+      sendNewUser(username, password);
+      /* A friendly welcome message! */
       Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-
       /* Since this is a new account, numProjects will be zero.
        * This takes the user to the homepage. */
       router.replace(`./(tabs)/?username=${username}&numProjects=0`);
-    } else {
-      Alert.alert('Error', 'Please enter both username and password.');
     }
   };
 
@@ -75,6 +72,34 @@ export default function CreateAccount() {
     </View>
   );
 };
+
+/* Attempts to send a new user to the database.
+ * If username already taken, returns false (recoverable error).
+ * Upon encountering an unrecoverable error, throws an error.
+ * If no errors, returns true. */
+function sendNewUser(user_name: string, password: string): boolean {
+  fetch('http://localhost:3000/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ user_name: user_name, password: password })
+  })
+  .then(response => {
+    if (response.status === 409) {
+
+      return false;
+    } else if (!response.ok) {
+      throw new Error('Server error');
+    } else {
+      console.log("OK");
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching profile:', error); 
+  });
+  return true;
+}
 
 const styles = StyleSheet.create({
   container: {
