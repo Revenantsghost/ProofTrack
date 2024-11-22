@@ -178,7 +178,7 @@ app.get('/fetchProfile', async (req, res) => {
     }
 });
 
-// Create new project with {proj_name: STRING, user_name: INT}
+// Create new project with {proj_name: STRING, user_name: INT, checkpointFrequency: STRING, duration: STRING, startDate: STRING | NULL}
 // Returns {proj_id: INT} 201
 // Returns 400 Bad Request for invalid project name
 // Returns 404 User Not Found if user_name is not found in the database
@@ -186,8 +186,11 @@ app.get('/fetchProfile', async (req, res) => {
 app.post('/uploadProject', async (req, res) => {
     try {
         const user_name = req.body.user_name;
-        const proj_name = req.body.proj_name
-        if (!proj_name) {
+        const proj_name = req.body.proj_name;
+        const checkpointFrequency = req.body.checkpointFrequency;
+        const duration = req.body.duration;
+        const startDate = req.body.startDate;
+        if (!proj_name || !checkpointFrequency || !startDate) {
             res.status(400).send('Bad Request');
             return;
         }
@@ -205,6 +208,8 @@ app.post('/uploadProject', async (req, res) => {
                 .input('user_name', user_name)
                 .input('proj_id', proj_id)
                 .input('proj_name', proj_name)
+                .input('checkpointFrequency', checkpointFrequency)
+                .input('startDate', startDate)
                 .query(`INSERT INTO projects (proj_id, proj_name, user_name) VALUES (@proj_id, @proj_name, @user_name)`);
             res.status(201).json({"proj_id": proj_id})
         }
@@ -215,7 +220,7 @@ app.post('/uploadProject', async (req, res) => {
 });
 
 // Find the project from certain user with query params user_name and proj_id
-// Returns {proj_name: STRING} 200
+// Returns {proj_name: STRING, checkpointFrequency: STRING, duration: STRING, startDate: STRING | NULL} 200
 // Returns 404 User Not Found if user_name is not found in the database
 // Returns 404 Project not found if proj_id is not found in the database
 // Returns 500 Server Error on server failure
@@ -233,7 +238,7 @@ app.get('/fetchProject', async (req, res) => {
             return
         }
         result = await pool.request().input('user_name', user_name).input('proj_id', proj_id)
-                .query('SELECT proj_name FROM projects WHERE user_name=@user_name AND proj_id=@proj_id');
+                .query('SELECT proj_name, checkpointFrequency, duration, startDate FROM projects WHERE user_name=@user_name AND proj_id=@proj_id');
         if (result.recordset.length <= 0) {
             res.status(404).send('Project not found');
             return
@@ -246,7 +251,7 @@ app.get('/fetchProject', async (req, res) => {
 });
 
 // Find all projects from certain user with query params user_name
-// Returns [{proj_name: STRING}, {proj_name: STRING}, ...] 200
+// Returns [{proj_id: STRING, proj_name: STRING}, {proj_id: STRING, proj_name: STRING}, ...] 200
 // Returns 404 User Not Found if user_name is not found in the database
 // Returns 500 Server Error on server failure
 app.get('/fetchProjects', async (req, res) => {
