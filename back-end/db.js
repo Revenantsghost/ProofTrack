@@ -11,10 +11,14 @@ const config = {
     }
 };
 
+let pool;
+
 async function connectToDB() {
     try {
-        let pool = await sql.connect(config);
-        console.log('Connected to Azure SQL Database');
+        if (!pool) {
+            pool = await sql.connect(config);
+            console.log('Connected to Azure SQL Database');
+        }
         return pool;
     } catch (err) {
         console.error('Database connection failed', err);
@@ -24,7 +28,12 @@ async function connectToDB() {
 
 async function closeDB() {
     try {
-        await sql.close();
+        if (sql.connected) { 
+            await sql.close();
+            console.log('Database closed successfully');
+        } else {
+            console.log('Database already closed');
+        }
     } catch (err) {
         console.error('Database close failed', err);
         throw err;

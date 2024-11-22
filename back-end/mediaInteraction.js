@@ -2,7 +2,7 @@ const { BlobServiceClient, generateBlobSASQueryParameters, StorageSharedKeyCrede
 const fs = require("fs");
 require('dotenv').config();
 const mysql = require('mssql');
-//const { use } = require(".");
+
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 
@@ -26,9 +26,10 @@ function hash(filePath) {
     const file = filePath.toString()
     let hashed = 0
     for(let i = 0; i<file.length; i++) {
-        hashed +=  Math.pow(file.charAt(i), i) * Math.pow(31, i)
+        let intValue = file.charAt(i).charCodeAt(0) - '0'.charCodeAt(0);
+        hashed +=  Math.pow(intValue, i) * Math.pow(31, i)
     }
-    return hashed
+    return hashed.toString()
 
 }
 
@@ -59,6 +60,8 @@ async function uploadMediaToBlob(filePath, projectId, userId) {
         hash: hashedVal
     };
 
+    console.log(metadata)
+
     // Upload blob
     const options = {
         blobHTTPHeaders: {
@@ -81,7 +84,7 @@ async function uploadMediaToBlob(filePath, projectId, userId) {
 // testing
 // const filePath = "back-end\\assets\\images\\dog.jpeg";
 // const pId = "-1";
-// uploadMediaToBlob(filePath, pId);
+// uploadMediaToBlob(filePath, pId, "2");
 
 
 
