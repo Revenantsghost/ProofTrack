@@ -236,7 +236,6 @@ async function getMediaFiles(userId, projectId) {
 
         // Fetch each file using its SAS URL
         const filePromises = freshUrls.map(async (url) => {
-            const response = await axios.get(url, { responseType: 'arraybuffer' });
             return {
                 fileName: extractFileName(url), // Extract file name from URL for reference
                 url 

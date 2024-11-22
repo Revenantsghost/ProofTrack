@@ -22,6 +22,23 @@ export default function Login() {
       // In actuality, you'll enter your userID in the first text bar, not your username.
       // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
 
+
+      fetch('api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+      .then(response => Alert.alert('Error',  JSON.stringify(response.json())))
+      .then(users => console.log(users))
+
+
+
+
       router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
       // The commented-out line is the one that will behave correctly.
       //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
