@@ -13,5 +13,13 @@ export type Project = {
   /* The userID of the user who owns this project. */
   userID: number,
   /* A project's UNIQUE ID number. */
-  projID: number
+  projID: number,
+  /* A project's name, usually describing the purpose of the project */
+  name: string,
+  /* The frequency at which proof needs to submitted */
+  checkpointFrequency: string,
+  /* Date until which the project lasts */
+  duration: string,
+  /* Images/proof associated with the project */
+  images: string[],
 }

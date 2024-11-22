@@ -3,7 +3,6 @@ import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable,} from 'react
 import { UserContext } from './_layout';
 import { Project, User } from '../types';
 import { router } from 'expo-router';
-import { create } from 'react-test-renderer';
 
 const user: User = useContext(UserContext);
 
@@ -19,7 +18,7 @@ const [projects, setProjects] = useState([
  * Fetches projects for the current user from the server.
  * Updates the `projects` state with the fetched data.
  */
-fetch(`http://localhost:3000/fetchProjects?user_id=${user.userID}`, {
+fetch(`http://10.19.227.26:3000/fetchProjects?user_name=${"T"}`, { //LINE TEMP CHANGE
   method: 'GET',
   headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
 })
@@ -81,7 +80,7 @@ export default function ProjectList() {
    * @param {Object} item - The item data for the pressed row.
    */
   const handlePress = (item: any) => {
-    router.navigate(`../edit_project?userID=${user.userID}&projID=${item.id}`);
+    router.navigate(`../edit_project?userID=${"T"}&projID=${item.id}`); //LINE TEMP CHANGE
     console.log('Item ID: ' + item.id);
   };
 
