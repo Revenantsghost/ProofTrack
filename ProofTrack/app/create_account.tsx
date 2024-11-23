@@ -60,7 +60,7 @@ export default function CreateAccount() {
 /* Handles a new user's attempt to create an account.
  * If successful, creates information on new user and sends them to main app.
  * If unsuccessful, alerts the User of the problem and benignly returns. */
-function handleCreation(username: string, password: string, passwordConfirm: string) {
+async function handleCreation(username: string, password: string, passwordConfirm: string) {
   if (!(username && password && passwordConfirm)) {
     /* Make sure every field has an entry. */
     Alert.alert('Error', 'Please enter both username and passwords.');
@@ -72,12 +72,10 @@ function handleCreation(username: string, password: string, passwordConfirm: str
   }
   
   /* Attempt to create a user and send to backend.
-   * If false, the username was already taken. */
-  const sendAttempt: boolean = sendNewUser(username, password);
-  if (!sendAttempt) {
-    /* Make sure the username wasn't already taken. */
-    Alert.alert('Error', 'Username already taken.');
-  } else {
+   * Handles the case of username already being taken. */
+  const sendAttempt: boolean = await sendNewUser(username, password);
+  if (sendAttempt) {
+    console.log("It was true!");
     /* A friendly welcome message! */
     Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
     /* Since this is a new account, numProjects will be zero.
@@ -90,7 +88,7 @@ function handleCreation(username: string, password: string, passwordConfirm: str
  * If username already taken, returns false.
  * Throws an error if server error encountered.
  * If no errors, returns true. */
-function sendNewUser(user_name: string, password: string): boolean {
+async function sendNewUser(user_name: string, password: string): Promise<boolean> {
   fetch('http://localhost:3000/register', {
     method: 'POST',
     headers: {
@@ -102,6 +100,7 @@ function sendNewUser(user_name: string, password: string): boolean {
     if (response.status === 409) {
       /* A status of 409 means the username was already takeen.
        * As this is a recoverable error, return false. */
+      Alert.alert('Error', 'Username already taken.');
       return false;
     } else if (!response.ok) {
       /* A server error is NOT recoverable. Throw an error. */
@@ -111,8 +110,10 @@ function sendNewUser(user_name: string, password: string): boolean {
     }
   })
   .catch(error => {
+    console.log("But I did get here.");
     console.error('Error fetching profile:', error);
-    throw error;
+    Alert.alert('Error setting up profile', 'Please try again later.');
+    return false;
   });
   return true;
 }
