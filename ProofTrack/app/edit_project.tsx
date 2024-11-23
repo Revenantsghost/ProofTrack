@@ -29,8 +29,9 @@ function parseProject(): ProjectInfo | undefined {
 export default function EditProject() {
   const projInfo = parseProject();
   const [project, setProject] = useState<Project | null>(null);
+  const [images, setImages] = useState<string[]>([]); // State for images
 
-  // Fetch project details on component mount.
+  //Fetch project details on component mount
   useEffect(() => {
     if (projInfo) {
       //Fetch project details, provide endpoint params using projInfo
@@ -45,22 +46,39 @@ export default function EditProject() {
           return response.json();
         })
         .then((data) => {
-          const fetchedProject = {
-            username: data.username,
+          const fetchedProject: Project = {
+            username: projInfo.username,
             name: data.project_name,
             projID: data.proj_id,
             notificationFrequency: data.checkpoint_frequency,
             duration: data.duration,
-            images: data.images,
+            images: [], // Placeholder, images will be fetched separately
           };
           setProject(fetchedProject);
         })
-        .catch((error) => {
-          console.error('Error fetching project data:', error);
-        });
+        .catch((error) => console.error('Error fetching project data:', error));
+
+      // Fetch images for the project
+      fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch media files');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
+              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
+            );
+            setImages(fetchedImages);
+          }
+        })
+        .catch((error) => console.error('Error fetching media files:', error));
     }
-    //Fetch images
-    fetch("http://10.19.227.26:3000/media/"+projInfo?.username+"/"+projInfo?.projID)
   }, [projInfo]);
 
 //Display loading message as project info is fetched
