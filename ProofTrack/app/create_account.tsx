@@ -13,32 +13,6 @@ export default function CreateAccount() {
   /* Password and PasswordConfirm MUST be equal. */
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
-  const handleCreation = () => {
-    if (!(username && password && passwordConfirm)) {
-      /* Make sure every field has an entry. */
-      Alert.alert('Error', 'Please enter both username and passwords.');
-      return;
-    } else if (password !== passwordConfirm) {
-      /* Make sure "Password" and "Confirm Password" match. */
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-    
-    /* Attempt to create a user and send to backend.
-     * If false, the username was already taken. */
-    const sendAttempt: boolean = sendNewUser(username, password);
-    if (!sendAttempt) {
-      /* Make sure the username wasn't already taken. */
-      Alert.alert('Error', 'Username already taken.');
-    } else {
-      /* A friendly welcome message! */
-      Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-      /* Since this is a new account, numProjects will be zero.
-       * This takes the user to the homepage. */
-      router.replace(`./(tabs)/?username=${username}&numProjects=0`);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Your Account</Text>
@@ -68,7 +42,10 @@ export default function CreateAccount() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={() => {handleCreation()}}>
+      <Pressable
+        style={styles.button}
+        onPress={() => {handleCreation(username, password, passwordConfirm)}}
+      >
         <Text style={styles.buttonText}>Create Account</Text>
       </Pressable>
 
@@ -80,9 +57,38 @@ export default function CreateAccount() {
   );
 };
 
+/* Handles a new user's attempt to create an account.
+ * If successful, creates information on new user and sends them to main app.
+ * If unsuccessful, alerts the User of the problem and benignly returns. */
+function handleCreation(username: string, password: string, passwordConfirm: string) {
+  if (!(username && password && passwordConfirm)) {
+    /* Make sure every field has an entry. */
+    Alert.alert('Error', 'Please enter both username and passwords.');
+    return;
+  } else if (password !== passwordConfirm) {
+    /* Make sure "Password" and "Confirm Password" match. */
+    Alert.alert('Error', 'Passwords do not match.');
+    return;
+  }
+  
+  /* Attempt to create a user and send to backend.
+   * If false, the username was already taken. */
+  const sendAttempt: boolean = sendNewUser(username, password);
+  if (!sendAttempt) {
+    /* Make sure the username wasn't already taken. */
+    Alert.alert('Error', 'Username already taken.');
+  } else {
+    /* A friendly welcome message! */
+    Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
+    /* Since this is a new account, numProjects will be zero.
+     * This takes the user to the homepage. */
+    router.replace(`./(tabs)/?username=${username}&numProjects=0`);
+  }
+}
+
 /* Attempts to send a new user to the database.
- * If username already taken, returns false (recoverable error).
- * Upon encountering an unrecoverable error, throws an error.
+ * If username already taken, returns false.
+ * Throws an error if server error encountered.
  * If no errors, returns true. */
 function sendNewUser(user_name: string, password: string): boolean {
   fetch('http://localhost:3000/register', {
@@ -94,16 +100,19 @@ function sendNewUser(user_name: string, password: string): boolean {
   })
   .then(response => {
     if (response.status === 409) {
-
+      /* A status of 409 means the username was already takeen.
+       * As this is a recoverable error, return false. */
       return false;
     } else if (!response.ok) {
+      /* A server error is NOT recoverable. Throw an error. */
       throw new Error('Server error');
     } else {
       console.log("OK");
     }
   })
   .catch(error => {
-    console.error('Error fetching profile:', error); 
+    console.error('Error fetching profile:', error);
+    throw error;
   });
   return true;
 }
