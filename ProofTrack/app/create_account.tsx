@@ -98,12 +98,12 @@ async function sendNewUser(user_name: string, password: string): Promise<boolean
     });
     if (response.status === 409) {
       /* A status of 409 means the username was already takeen.
-       * As this is a recoverable error, return false. */
+       * As this isn't technically an internal error, just return false. */
       Alert.alert('Error', 'Username already taken.');
       return false;
     } else if (!response.ok) {
-      console.log("Oh no!");
-      /* A server error is NOT recoverable. Throw an error. */
+      /* A server error is most definitely an internal error.
+       * Throw the error and let the catch block handle it. */
       throw new Error('Server error');
     } else {
       console.log("OK");
