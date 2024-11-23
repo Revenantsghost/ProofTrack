@@ -59,11 +59,23 @@ export default function CreateAccount() {
 
 /* Handles a new user's attempt to create an account.
  * If successful, creates information on new user and sends them to main app.
- * If unsuccessful, alerts the User of the problem and benignly returns. */
+ * If unsuccessful, alerts the User of the problem and benignly returns.
+ * Unsuccessful if:
+ * * Username already taken.
+ * * Not all fields entered.
+ * * Passwords don't match. */
 async function handleCreation(username: string, password: string, passwordConfirm: string) {
-  if (!(username && password && passwordConfirm)) {
-    /* Make sure every field has an entry. */
-    Alert.alert('Error', 'Please enter both username and passwords.');
+  if (!username) {
+    /* Make sure user entered their username. */
+    Alert.alert('Error', 'Please enter your username.');
+    return;
+  } else if (!password) {
+    /* Make sure user entered their password. */
+    Alert.alert('Error', 'Please enter your password.');
+    return;
+  } else if (!passwordConfirm) {
+    /* Make sure user confirmed their password. */
+    Alert.alert('Error', 'Please confirm your password.');
     return;
   } else if (password !== passwordConfirm) {
     /* Make sure "Password" and "Confirm Password" match. */
@@ -84,12 +96,12 @@ async function handleCreation(username: string, password: string, passwordConfir
 }
 
 /* Attempts to send a new user to the database.
- * If username already taken, returns false.
- * Throws an error if server error encountered.
- * If no errors, returns true. */
+ * Returns false if username already taken.
+ * Throws an error (and then returns false) if server error encountered.
+ * Returns true if no issues encountered. */
 async function sendNewUser(user_name: string, password: string): Promise<boolean> {
   try {
-    const response = await fetch('http://localhost:3000/register', {
+    const response: Response = await fetch('http://localhost:3000/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -97,7 +109,7 @@ async function sendNewUser(user_name: string, password: string): Promise<boolean
       body: JSON.stringify({ user_name: user_name, password: password })
     });
     if (response.status === 409) {
-      /* A status of 409 means the username was already takeen.
+      /* A status of 409 means the username was already taken.
        * As this isn't technically an internal error, just return false. */
       Alert.alert('Error', 'Username already taken.');
       return false;
@@ -109,8 +121,9 @@ async function sendNewUser(user_name: string, password: string): Promise<boolean
       console.log("OK");
     }
   } catch(error) {
+    /* Log the error and THEN return false. */
     console.error('Error fetching profile:', error);
-    Alert.alert('Error setting up profile', 'Please try again later.');
+    Alert.alert('Error setting up profile.', 'Please try again later.');
     return false;
   }
   return true;
