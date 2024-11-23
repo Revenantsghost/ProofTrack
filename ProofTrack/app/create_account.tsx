@@ -75,7 +75,6 @@ async function handleCreation(username: string, password: string, passwordConfir
    * Handles the case of username already being taken. */
   const sendAttempt: boolean = await sendNewUser(username, password);
   if (sendAttempt) {
-    console.log("It was true!");
     /* A friendly welcome message! */
     Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
     /* Since this is a new account, numProjects will be zero.
@@ -89,32 +88,31 @@ async function handleCreation(username: string, password: string, passwordConfir
  * Throws an error if server error encountered.
  * If no errors, returns true. */
 async function sendNewUser(user_name: string, password: string): Promise<boolean> {
-  fetch('http://localhost:3000/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ user_name: user_name, password: password })
-  })
-  .then(response => {
+  try {
+    const response = await fetch('http://localhost:3000/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_name: user_name, password: password })
+    });
     if (response.status === 409) {
       /* A status of 409 means the username was already takeen.
        * As this is a recoverable error, return false. */
       Alert.alert('Error', 'Username already taken.');
       return false;
     } else if (!response.ok) {
+      console.log("Oh no!");
       /* A server error is NOT recoverable. Throw an error. */
       throw new Error('Server error');
     } else {
       console.log("OK");
     }
-  })
-  .catch(error => {
-    console.log("But I did get here.");
+  } catch(error) {
     console.error('Error fetching profile:', error);
     Alert.alert('Error setting up profile', 'Please try again later.');
     return false;
-  });
+  }
   return true;
 }
 
