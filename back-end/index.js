@@ -178,9 +178,10 @@ app.get('/fetchProfile', async (req, res) => {
     }
 });
 
-// Create new project with {proj_name: STRING, user_name: INT, checkpointFrequency: STRING, duration: STRING, startDate: STRING}
+// Create new project with
+// {proj_name: STRING, user_name: INT, checkpointFrequency: STRING, duration: STRING, startDate: STRING}
 // Returns {proj_id: INT} 201
-// Returns 400 Bad Request for invalid project name
+// Returns 400 Bad Request for invalid proj_name, checkpointFrequency, duration, or startDate
 // Returns 404 User Not Found if user_name is not found in the database
 // Returns 500 Server Error on server failure
 app.post('/uploadProject', async (req, res) => {
