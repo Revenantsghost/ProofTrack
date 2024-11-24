@@ -3,13 +3,22 @@ const app = require('../index.js');
 
 
 describe('API Endpoints', () => {
+
+    // User Table Variables
     let user_name = "Tony"
     let password = "pass"
     let new_password = "password"
+
+    // Project Table Variables
     let proj_name = "Test Project"
     let new_name = "New_name"
+    let checkpointFrequency = "Daily"
+    let duration = "12/31"
+    let startDate = "1/1"
+
     let proj_id;
 
+    // Test cases for User Table
     test('POST /register - Create new user', async () => {
         const response = await request(app)
             .post('/register')
@@ -41,10 +50,13 @@ describe('API Endpoints', () => {
         expect(response.body).toHaveProperty('num_of_projects', 0);
     });
 
+
+    // Test cases for Project Table
     test('POST /uploadProject - Upload Project', async () => {
         const response = await request(app)
             .post('/uploadProject')
-            .send({"user_name": user_name, "proj_name": proj_name});
+            .send({"user_name": user_name, "proj_name": proj_name, "checkpointFrequency": checkpointFrequency,
+                "duration": duration, "startDate": startDate});
 
         expect(response.status).toBe(201);
         proj_id = response.body.proj_id
@@ -55,15 +67,16 @@ describe('API Endpoints', () => {
         const response = await request(app)
             .get(`/fetchProject?user_name=${user_name}&proj_id=${proj_id}`)
         expect(response.status).toBe(200);
-        //console.log(response)
         expect(response.body).toHaveProperty('proj_name', proj_name);
+        expect(response.body).toHaveProperty('checkpointFrequency', checkpointFrequency);
+        expect(response.body).toHaveProperty('duration', duration);
+        expect(response.body).toHaveProperty('startDate', startDate);
     });
 
     test('get /fetchProjects - fetch Projects', async () => {
         const response = await request(app)
             .get(`/fetchProjects?user_name=${user_name}`)
         expect(response.status).toBe(200);
-        //console.log(response)
         expect(response.body[0]).toHaveProperty('proj_id', 1);
         expect(response.body[0]).toHaveProperty('proj_name', proj_name);
     });
@@ -74,8 +87,9 @@ describe('API Endpoints', () => {
             .send({"user_name": user_name, "proj_id": proj_id, "proj_name": new_name});
         expect(response.status).toBe(200);
     });
+
     
-    // Delete everything from a user in both user table and project table
+    // Delete everything from a user in both the users table and projects table
     // Used to reset table to original condition.
     test('delete /hardDELETEUSER - Delete everything from user', async () => {
         const response = await request(app)

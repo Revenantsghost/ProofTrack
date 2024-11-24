@@ -178,9 +178,10 @@ app.get('/fetchProfile', async (req, res) => {
     }
 });
 
-// Create new project with {proj_name: STRING, user_name: INT, checkpointFrequency: STRING, duration: STRING, startDate: STRING | NULL}
+// Create new project with
+// {proj_name: STRING, user_name: INT, checkpointFrequency: STRING, duration: STRING, startDate: STRING}
 // Returns {proj_id: INT} 201
-// Returns 400 Bad Request for invalid project name
+// Returns 400 Bad Request for invalid proj_name, checkpointFrequency, duration, or startDate
 // Returns 404 User Not Found if user_name is not found in the database
 // Returns 500 Server Error on server failure
 app.post('/uploadProject', async (req, res) => {
@@ -190,7 +191,7 @@ app.post('/uploadProject', async (req, res) => {
         const checkpointFrequency = req.body.checkpointFrequency;
         const duration = req.body.duration;
         const startDate = req.body.startDate;
-        if (!proj_name || !checkpointFrequency || !startDate) {
+        if (!proj_name || !checkpointFrequency || !duration || !startDate) {
             res.status(400).send('Bad Request');
             return;
         }
@@ -209,8 +210,9 @@ app.post('/uploadProject', async (req, res) => {
                 .input('proj_id', proj_id)
                 .input('proj_name', proj_name)
                 .input('checkpointFrequency', checkpointFrequency)
+                .input('duration', duration)
                 .input('startDate', startDate)
-                .query(`INSERT INTO projects (proj_id, proj_name, user_name) VALUES (@proj_id, @proj_name, @user_name)`);
+                .query(`INSERT INTO projects (proj_id, proj_name, user_name, checkpointFrequency, duration, startDate) VALUES (@proj_id, @proj_name, @user_name, @checkpointFrequency, @duration, @startDate)`);
             res.status(201).json({"proj_id": proj_id})
         }
     } catch (error) {
@@ -220,7 +222,7 @@ app.post('/uploadProject', async (req, res) => {
 });
 
 // Find the project from certain user with query params user_name and proj_id
-// Returns {proj_name: STRING, checkpointFrequency: STRING, duration: STRING, startDate: STRING | NULL} 200
+// Returns {proj_name: STRING, checkpointFrequency: STRING, duration: STRING, startDate: STRING} 200
 // Returns 404 User Not Found if user_name is not found in the database
 // Returns 404 Project not found if proj_id is not found in the database
 // Returns 500 Server Error on server failure
@@ -309,7 +311,7 @@ app.put('/updateProject', async (req, res) => {
 
 
 // TESTING PURPOSES ONLY
-// Deletes a user and all associated projects given {user_name: STRING}
+// Deletes a user and all associated projects (users table and projects table) given {user_name: STRING}
 // Returns 200 user deleted upon success
 // Returns 404 User not found if user_name is not found in the database
 // Returns 500 Server Error on server failure
