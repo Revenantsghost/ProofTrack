@@ -190,7 +190,7 @@ app.post('/uploadProject', async (req, res) => {
         const checkpointFrequency = req.body.checkpointFrequency;
         const duration = req.body.duration;
         const startDate = req.body.startDate;
-        if (!proj_name || !checkpointFrequency || !startDate) {
+        if (!proj_name || !checkpointFrequency || !duration || !startDate) {
             res.status(400).send('Bad Request');
             return;
         }
