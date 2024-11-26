@@ -36,50 +36,54 @@ export default async function EditProject() {
     if (projInfo) {
       //Fetch project details, provide endpoint params using projInfo
       const fetchInfo = async () => {
-        const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch project data');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          const fetchedProject: Project = {
-            username: projInfo.username,
-            name: data.project_name,
-            projID: data.proj_id,
-            notificationFrequency: data.checkpoint_frequency,
-            duration: data.duration,
-            images: [], // Placeholder, images will be fetched separately
-          };
-          setProject(fetchedProject);
-        })
-        .catch((error) => console.error('Error fetching project data:', error));}
+        try{
+          const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            })
+            if (!infoResponse.ok) {
+              throw new Error('Failed to fetch project data');
+            }
+            const data = await infoResponse.json();
+            const fetchedProject: Project = {
+              username: projInfo.username,
+              name: data.project_name,
+              projID: data.proj_id,
+              notificationFrequency: data.checkpoint_frequency,
+              duration: data.duration,
+              images: [], // Placeholder, images will be fetched separately
+            };
+            setProject(fetchedProject);
+        }
+        catch(error){
+          console.error('Error fetching media files:', error);
+        }
+      }
 
       // Fetch images for the project
-      const fetchImages = async () => {
-        const imageResponse = await fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then((response) => {
-          if (!response.ok) {
+        const fetchImages = async () => {
+        try{
+          const imageResponse = await fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          })
+          if (!imageResponse.ok) {
             throw new Error('Failed to fetch media files');
           }
-          return response.json();
-        })
-        .then((data) => {
+          const data = await imageResponse.json();
+
           if (data.success) {
             const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
               `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
             );
             setImages(fetchedImages);
           }
-        })
-        .catch((error) => console.error('Error fetching media files:', error));}
+        }
+      catch(error) {
+        console.error('Error fetching media files:', error);
+      }
+    }
+
       fetchInfo();
       fetchImages();
     }
