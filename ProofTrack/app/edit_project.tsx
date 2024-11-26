@@ -1,36 +1,106 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Project } from './types';
-
-//Test data
-const data = {
-  name: 'Project ProofTrack',
-  projID: '1',
-  checkpointFrequency: 'Weekly',
-  duration: '3 months',
-  images: [
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
-  ]
-};
-
-const project = {
-  name: 'Study biology for an hour',
-  projID:'2',
-  checkpointFrequency: 'Every 30 min',
-  duration:'12/10/2024',
-  images: ['https://prooftrack.blob.core.windows.net/demo/Biology_HW.png?sp=r&st=2024-11-13T04:17:36Z&se=2024-11-13T12:17:36Z&spr=https&sv=2022-11-02&sr=b&sig=TwKY2vIT3oC6%2FGEt77kKwR8TpoSWEVvE372Mw2p7eOc%3D']
-};
+import { Project, ProjectInfo } from './types';
 
 /**
- * A component to display edit_rpoject page.
+ * Parses project information from local search parameters. Furnishes params for endpoint
  *
- * @component
+ * @returns {ProjectInfo | undefined} A `ProjectInfo` object if parsing succeeds; otherwise, `undefined`.
  */
-export default function EditProject() {
-  return(
+function parseProject(): ProjectInfo | undefined {
+  const { userID, projID } = useLocalSearchParams();
+
+  // Ensure the passed parameters are all strings.
+  if (typeof userID !== 'string' || typeof projID !== 'string') {
+    return undefined;
+  }
+
+  const user_ID = userID;
+  const proj_ID: number = parseFloat(projID);
+
+  if (Number.isNaN(user_ID) || Number.isNaN(proj_ID)) {
+    return undefined;
+  }
+
+  return { username: user_ID, projID: proj_ID };
+}
+
+export default async function EditProject() {
+  const projInfo = parseProject();
+  const [project, setProject] = useState<Project | null>(null);
+  const [images, setImages] = useState<string[]>([]); // State for images
+
+  //Fetch project details on component mount
+  useEffect(() => {
+    if (projInfo) {
+      //Utilize async/await to anticipate fetch
+      const fetchInfo = async () => {
+        try{
+          //Fetch project details, provide endpoint params using projInfo
+          const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+            })
+            //Error checking
+            if (!infoResponse.ok) {
+              throw new Error('Failed to fetch project data');
+            }
+            const data = await infoResponse.json(); //Processs response into JSON
+            const fetchedProject: Project = {
+              username: projInfo.username,
+              name: data.project_name,
+              projID: data.proj_id,
+              notificationFrequency: data.checkpoint_frequency,
+              duration: data.duration,
+              images: [], // Placeholder, images will be fetched separately
+            };
+            setProject(fetchedProject); //Set program variables
+        }
+        catch(error){
+          console.error('Error fetching media files:', error);
+        }
+      }
+
+      // Fetch images for the project
+        const fetchImages = async () => {
+        try{
+          const imageResponse = await fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          })
+          if (!imageResponse.ok) {
+            throw new Error('Failed to fetch media files');
+          }
+          const data = await imageResponse.json();
+
+          if (data.success) {
+            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
+              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
+            );
+            setImages(fetchedImages);
+          }
+        }
+      catch(error) {
+        console.error('Error fetching media files:', error);
+      }
+    }
+
+      fetchInfo();
+      fetchImages();
+    }
+  }, [projInfo]);
+
+//Display loading message as project info is fetched
+  if (!project) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Loading project...</Text>
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}>
       {/* Project Name */}
       <Text style={styles.title}>{project.name}</Text>
@@ -39,7 +109,7 @@ export default function EditProject() {
       <View style={styles.detailsContainer}>
         <Text style={styles.detailText}>
           <Text style={styles.detailLabel}>Checkpoint Frequency: </Text>
-          {project.checkpointFrequency}
+          {project.notificationFrequency}
         </Text>
         <Text style={styles.detailText}>
           <Text style={styles.detailLabel}>Duration: </Text>
@@ -51,44 +121,11 @@ export default function EditProject() {
       <Text style={styles.sectionTitle}>Images</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
         {project.images.map((imageUrl, index) => (
-          <Image
-            key={index}
-            source={{ uri: imageUrl }}
-            style={styles.image}
-          />
+          <Image key={index} source={{ uri: imageUrl }} style={styles.image} />
         ))}
       </ScrollView>
     </View>
   );
-};
-
-/**
- * Parses project information from local search parameters.
- *
- * @returns {Project | undefined} A `Project` object if parsing succeeds; otherwise, `undefined`.
- */
-function parseProject(): Project| undefined {
-  const { userID, projID } = useLocalSearchParams();
-  // Ensure the passed parameters are all strings.
-  if (typeof(userID) !== 'string'
-                                    || typeof(projID) !== 'string') {
-    // Undefined signals an error to the caller.
-    return undefined;
-  }
-  // Ensure we were able to parse numbers out of userID and projID.
-  const user_ID: number = parseFloat(userID as string);
-  const proj_ID: number = parseFloat(projID as string);
-  if (Number.isNaN(user_ID) || Number.isNaN(proj_ID)) {
-    // Undefined signals an error to the caller.
-    return undefined;
-  }
-  const project: Project = {
-    userID: user_ID,
-    projID: proj_ID,
-  }
-  console.log(userID);
-  console.log(projID)
-  return project;
 }
 
 /**
