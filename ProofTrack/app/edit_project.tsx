@@ -34,17 +34,19 @@ export default async function EditProject() {
   //Fetch project details on component mount
   useEffect(() => {
     if (projInfo) {
-      //Fetch project details, provide endpoint params using projInfo
+      //Utilize async/await to anticipate fetch
       const fetchInfo = async () => {
         try{
+          //Fetch project details, provide endpoint params using projInfo
           const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
             })
+            //Error checking
             if (!infoResponse.ok) {
               throw new Error('Failed to fetch project data');
             }
-            const data = await infoResponse.json();
+            const data = await infoResponse.json(); //Processs response into JSON
             const fetchedProject: Project = {
               username: projInfo.username,
               name: data.project_name,
@@ -53,7 +55,7 @@ export default async function EditProject() {
               duration: data.duration,
               images: [], // Placeholder, images will be fetched separately
             };
-            setProject(fetchedProject);
+            setProject(fetchedProject); //Set program variables
         }
         catch(error){
           console.error('Error fetching media files:', error);
