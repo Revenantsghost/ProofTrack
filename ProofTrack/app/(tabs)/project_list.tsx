@@ -1,46 +1,69 @@
-import React, { createContext, useContext, useState} from 'react';
-import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable,} from 'react-native';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { UserContext } from './_layout';
-import { Project, User } from '../types';
+import { User } from '../types';
 import { router } from 'expo-router';
 
-const user: User = useContext(UserContext);
+export default function ProjectList() {
+  // Use hooks inside the component
+  const user: User = useContext(UserContext);
 
-const [projects, setProjects] = useState([
-  { projID: '2', title: 'Study biology for an hour'},
-  { projID: '3',  title: 'Lose 20lb before the Summer'},
-  { projID: '4', title: 'Run on the treadmill for 30min'},
-  { projID: '5', title: 'Clean my room'}
-]);
+  const [projects, setProjects] = useState([
+    { projID: '2', title: 'Study biology for an hour' },
+    { projID: '3', title: 'Lose 20lb before the Summer' },
+    { projID: '4', title: 'Run on the treadmill for 30min' },
+    { projID: '5', title: 'Clean my room' },
+  ]);
 
-
-/**
- * Fetches projects for the current user from the server.
- * Updates the `projects` state with the fetched data.
- */
-const fetchUserInfo = async () => {
-  try {
-    const userInfoResponse = await fetch(`http://10.19.227.26:3000/fetchProjects?user_name=${"T"}`, { //LINE TEMP CHANGE
-      method: 'GET',
-      headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
-    })
-    if(!userInfoResponse.ok){
-      throw new Error('Failed to fetch project data');
+  /**
+   * Fetches projects for the current user from the server.
+   * Updates the `projects` state with the fetched data.
+   */
+  const fetchUserInfo = async () => {
+    try {
+      const userInfoResponse = await fetch(
+        `http://10.19.227.26:3000/fetchProjects?user_name=${user.username}`, // Adjust username dynamically
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }, // Ensure the server knows it's a JSON payload
+        }
+      );
+      if (!userInfoResponse.ok) {
+        throw new Error('Failed to fetch project data');
+      }
+      const data = await userInfoResponse.json();
+      console.log(data);
+      const fetchedProjects = data.map((p: { projID: any; name: any }) => ({
+        projID: p.projID,
+        title: p.name,
+      }));
+      setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
-    const data = await userInfoResponse.json();
-    const fetchedProjects = data.map((p: { proj_id: any; project_name: any; }) => ({
-      id: p.proj_id,
-      title: p.project_name,
-    }))
-    setProjects([...projects, ...fetchedProjects]);
+  };
 
-  }
-  catch(error){
-    console.error('Error fetching profile:', error);
-  }
+  // Fetch user info when the component mounts
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  const handlePress = (item: any) => {
+    router.navigate(`../edit_project?userID=${user.username}&projID=${item.projID}`);
+    console.log('Item ID: ' + item.projID);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={projects}
+        keyExtractor={(item) => item.projID}
+        renderItem={({ item }) => <ItemRow item={item} onPress={handlePress} />}
+        ItemSeparatorComponent={ItemSeparator}
+      />
+    </SafeAreaView>
+  );
 }
-fetchUserInfo();
-
 
 /**
  * Renders an individual item row in the list.
@@ -61,41 +84,7 @@ const ItemRow = ({ item, onPress }: any) => (
  *
  * @returns {JSX.Element} A separator component.
  */
-const ItemSeparator = () => (
-  <View style={styles.separator} />
-);
-
-/**
- * Main component that displays a list of projects using a FlatList.
- *
- * @component
- */
-export default function ProjectList() {
-  /**
-   * Handles the press event for an item, directing user to edit_project page.
-   * Uses local search params to pass information to the edit_project page.
-   *
-   * @param {Object} item - The item data for the pressed row.
-   */
-  const handlePress = (item: any) => {
-    router.navigate(`../edit_project?userID=${"T"}&projID=${item.id}`); //LINE TEMP CHANGE
-    console.log('Item ID: ' + item.id);
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={projects}
-        keyExtractor={(item) => item.projID}
-        renderItem={({ item }) => (
-          <ItemRow item={item} onPress={handlePress} />
-        )}
-        ItemSeparatorComponent={ItemSeparator}
-      />
-    </SafeAreaView>
-  );
-}
-
+const ItemSeparator = () => <View style={styles.separator} />;
 
 /**
  * Styles for components.
@@ -133,5 +122,5 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 18,
     color: '#ccc',
-  }
+  },
 });
