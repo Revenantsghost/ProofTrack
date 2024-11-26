@@ -26,7 +26,7 @@ function parseProject(): ProjectInfo | undefined {
   return { username: user_ID, projID: proj_ID };
 }
 
-export default function EditProject() {
+export default async function EditProject() {
   const projInfo = parseProject();
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<string[]>([]); // State for images
@@ -35,7 +35,8 @@ export default function EditProject() {
   useEffect(() => {
     if (projInfo) {
       //Fetch project details, provide endpoint params using projInfo
-      fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
+      const fetchInfo = async () => {
+        const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -56,10 +57,11 @@ export default function EditProject() {
           };
           setProject(fetchedProject);
         })
-        .catch((error) => console.error('Error fetching project data:', error));
+        .catch((error) => console.error('Error fetching project data:', error));}
 
       // Fetch images for the project
-      fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
+      const fetchImages = async () => {
+        const imageResponse = await fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -77,7 +79,9 @@ export default function EditProject() {
             setImages(fetchedImages);
           }
         })
-        .catch((error) => console.error('Error fetching media files:', error));
+        .catch((error) => console.error('Error fetching media files:', error));}
+      fetchInfo();
+      fetchImages();
     }
   }, [projInfo]);
 
