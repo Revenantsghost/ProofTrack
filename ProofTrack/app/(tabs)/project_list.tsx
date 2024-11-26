@@ -18,30 +18,28 @@ const [projects, setProjects] = useState([
  * Fetches projects for the current user from the server.
  * Updates the `projects` state with the fetched data.
  */
-fetch(`http://10.19.227.26:3000/fetchProjects?user_name=${"T"}`, { //LINE TEMP CHANGE
-  method: 'GET',
-  headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
-})
-.then(response => {
-  if (response.ok) {
-    response.json().then(data => {
-      const fetchedProjects = data.map((p: { proj_id: any; project_name: any; }) => ({
-        id: p.proj_id,
-        title: p.project_name,
-      }))
-      setProjects([...projects, ...fetchedProjects]);
-    }).catch(error => {
-        console.log(response)
-        console.error('Error parsing JSON:', error);
-    });
-  } else {
-    console.log(response)
-      throw new Error('User not found or server error');
+const fetchUserInfo = async () => {
+  try {
+    const userInfoResponse = await fetch(`http://10.19.227.26:3000/fetchProjects?user_name=${"T"}`, { //LINE TEMP CHANGE
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
+    })
+    if(!userInfoResponse.ok){
+      throw new Error('Failed to fetch project data');
+    }
+    const data = await userInfoResponse.json();
+    const fetchedProjects = data.map((p: { proj_id: any; project_name: any; }) => ({
+      id: p.proj_id,
+      title: p.project_name,
+    }))
+    setProjects([...projects, ...fetchedProjects]);
+
   }
-})
-.catch(error => {
-  console.error('Error fetching profile:', error);
-});
+  catch(error){
+    console.error('Error fetching profile:', error);
+  }
+}
+fetchUserInfo();
 
 
 /**
