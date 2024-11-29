@@ -11,10 +11,22 @@ const multer = require("multer"); // for handling file uploads
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+    console.log('here')
+    console.log(`${req.method} ${req.url}`);  // Log the incoming request method and URL
+    next();
+});
 
  const upload = multer({ dest: "uploads/" }); // temp upload location
 
  const { submitProof } = require("./mediaInteraction.js");
+
+
+//TESTING ONLY
+ app.get('/ping', (req, res) => {
+    console.log("Ping route hit");
+    res.status(200).send('pong');
+});
 
 // Endpoint to submit proof
 app.post("/submit-proof", upload.single("file"), async (req, res) => {
@@ -98,22 +110,19 @@ app.post('/register', async (req, res) => {
 // Returns 401 unauthorized if user_name and password are not found in database
 // Returns 400 Bad Request for invalid username/password
 // Returns 500 Server Error on server failure
-app.get('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
+    console.log('POST /login hit');
     try {
-        const user_name = req.query.user_name;
-        const password = req.query.password;
-        if (user_name && password) {
+        const { username, password } = req.body; // Extract username and password from the request body
+        if (username && password) {
             const pool = await connectToDB();
-            const result = await pool.request().input('user_name', user_name).query('SELECT password FROM users WHERE user_name=@user_name');
-            if (result.recordset.length <= 0) {
-                res.status(404).send('User not found');
-                return
+            const result = await pool.request().input('user_name', username).query('SELECT password FROM users WHERE user_name=@user_name');
+            
+            if (result.recordset.length <= 0 || result.recordset[0].password !== password) {
+                res.status(404).send('Incorrect Username or Password, please try again');
+                return;
             }
-            if (result.recordset[0].password !== password) {
-                res.status(401).send('Incorrect Username or Password');
-                return
-            }
-            res.status(200).json({"login_success": true});
+            res.status(200).json({ login_success: true });
         } else {
             res.status(400).send('Bad Request');
         }
@@ -339,9 +348,12 @@ app.delete('/hardDELETEUSER', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`!!Server is running on http://localhost:${PORT}`);
 });
+
+console.log('helloooo')
 
 // Shuts down server
 process.on('SIGTERM', async () => {
@@ -354,4 +366,7 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
+
+
 module.exports = app;
+
