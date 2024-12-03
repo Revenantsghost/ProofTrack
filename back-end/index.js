@@ -104,7 +104,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Attempts to login with query params username and password
+// Attempts to login with {username: STRING, password: STRING}
 // Returns 200 {login_success, true} if username and password are found in database
 // Returns 404 Incorrect Username or Password
 // Returns 500 Server Error on server failure
