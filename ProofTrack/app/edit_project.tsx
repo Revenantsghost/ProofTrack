@@ -58,7 +58,7 @@ export default async function EditProject() {
             setProject(fetchedProject); //Set program variables
         }
         catch(error){
-          console.error('Error fetching media files:', error);
+          console.error('Error fetching project info:', error);
         }
       }
 
