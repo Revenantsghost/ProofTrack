@@ -10,7 +10,7 @@ export default function Login() {
 
   const handleLogin = () => {
     if (userID && password) {
-      fetch('http://192.168.86.198:3000/login', {
+      fetch('http://13.64.145.249:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
