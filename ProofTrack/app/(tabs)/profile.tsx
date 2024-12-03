@@ -13,10 +13,6 @@ export default function Profile() {
   const user: User = useContext(UserContext);
   // Convert their username into its possessive form.
   const theirs: string = appendApostrophe(user.username);
-  // True iff the LogoutModal is open.
-  const [logoutModal, setLogoutModal] = useState(false);
-  // True iff the ChangePasswordModal is open.
-  const [changePasswordModal, setChangePasswordModal] = useState(false);
   return (
     <View>
       { /* Positioning for profile icon. */}
@@ -30,7 +26,7 @@ export default function Profile() {
       { /* Row providing link to change password. */ }
       <View style={{ top: 80 }}>
         <Text style={styles.leftText}>Password</Text>
-        <TouchableOpacity onPress={() => {alert("Not yet implemented!")}}>
+        <TouchableOpacity onPress={() => router.navigate('../change_password')}>
           <Text style={styles.rightLink}>{"[Edit]"}</Text>
         </TouchableOpacity>
       </View>
@@ -46,30 +42,10 @@ export default function Profile() {
       <View style={{ top: 310 }}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => setLogoutModal(true)}
+          onPress={() => router.navigate('../login')}
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
-      </View>
-      <View style={{alignItems: "center"}}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={logoutModal}
-          onRequestClose={() => {
-            setLogoutModal(false);
-          }}>
-          <View style={styles.modalView}>
-            <View style={styles.modalView}>
-              <Text>Hello World!</Text>
-              <TouchableOpacity
-                style={styles.logoutButton}
-                onPress={() => {router.replace('../login')}}>
-                <Text style={styles.buttonText}>Log Out</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
       </View>
     </View> 
   );
