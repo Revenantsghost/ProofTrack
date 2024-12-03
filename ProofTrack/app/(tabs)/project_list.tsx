@@ -19,7 +19,7 @@ const [projects, setProjects] = useState([
  * Fetches projects for the current user from the server.
  * Updates the `projects` state with the fetched data.
  */
-fetch(`http://localhost:3000/fetchProjects?user_id=${user.userID}`, {
+fetch(`http://http://13.64.145.249:3000/fetchProjects?user_id=${user.userID}`, {
   method: 'GET',
   headers: {'Content-Type': 'application/json'}, // Ensure the server knows it's a JSON payload
 })
