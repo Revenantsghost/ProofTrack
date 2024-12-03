@@ -22,7 +22,7 @@ export default function ProjectList() {
   const fetchUserInfo = async () => {
     try {
       const userInfoResponse = await fetch(
-        `http://10.19.227.26:3000/fetchProjects?user_name=${user.username}`, // Adjust username dynamically
+        `http://13.64.145.249:3000/fetchProjects?user_name=${user.username}`, // Adjust username dynamically
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }, // Ensure the server knows it's a JSON payload
@@ -33,9 +33,9 @@ export default function ProjectList() {
       }
       const data = await userInfoResponse.json();
       console.log(data);
-      const fetchedProjects = data.map((p: { projID: any; name: any }) => ({
-        projID: p.projID,
-        title: p.name,
+      const fetchedProjects = data.map((p: { proj_id: any; proj_name: any }) => ({
+        projID: p.proj_id,
+        title: p.proj_name,
       }));
       setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
     } catch (error) {
