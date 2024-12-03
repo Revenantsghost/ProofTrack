@@ -12,7 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
-    console.log('here')
     console.log(`${req.method} ${req.url}`);  // Log the incoming request method and URL
     next();
 });
@@ -105,10 +104,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Attempts to login with query params user_name and password
-// Returns 200 {"login_success", true} if user_name and password are found in database
-// Returns 401 unauthorized if user_name and password are not found in database
-// Returns 400 Bad Request for invalid username/password
+// Attempts to login with query params username and password
+// Returns 200 {login_success, true} if username and password are found in database
+// Returns 404 Incorrect Username or Password
 // Returns 500 Server Error on server failure
 app.post('/login', async (req, res) => {
     console.log('POST /login hit');
@@ -352,8 +350,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`!!Server is running on http://localhost:${PORT}`);
 });
-
-console.log('helloooo')
 
 // Shuts down server
 process.on('SIGTERM', async () => {
