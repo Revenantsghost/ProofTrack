@@ -38,7 +38,7 @@ export default async function EditProject() {
       const fetchInfo = async () => {
         try{
           //Fetch project details, provide endpoint params using projInfo
-          const infoResponse = await fetch(`http://10.19.227.26:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
+          const infoResponse = await fetch(`http://13.64.145.249:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
             })
@@ -65,7 +65,7 @@ export default async function EditProject() {
       // Fetch images for the project
         const fetchImages = async () => {
         try{
-          const imageResponse = await fetch(`http://10.19.227.26:3000/media/${projInfo.username}/${projInfo.projID}`, {
+          const imageResponse = await fetch(`http://13.64.145.249:3000/media/${projInfo.username}/${projInfo.projID}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           })
@@ -78,6 +78,7 @@ export default async function EditProject() {
             const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
               `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
             );
+            console.log(fetchImages);
             setImages(fetchedImages);
           }
         }
