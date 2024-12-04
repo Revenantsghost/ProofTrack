@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
+import { getServer } from './constants';
+
+const SERVER: string = getServer();
 
 /* Renders a "Create Account" page.
  * (Currently it accepts any non-empty input as long as passwords match) */
@@ -101,7 +104,7 @@ async function handleCreation(username: string, password: string, passwordConfir
  * Returns true if no issues encountered. */
 async function sendNewUser(user_name: string, password: string): Promise<boolean> {
   try {
-    const response: Response = await fetch('http://localhost:3000/register', {
+    const response: Response = await fetch(`${SERVER}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
