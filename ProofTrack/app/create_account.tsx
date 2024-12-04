@@ -104,14 +104,16 @@ async function handleCreation(username: string, password: string, passwordConfir
  * Returns true if no issues encountered. */
 async function sendNewUser(user_name: string, password: string): Promise<boolean> {
   try {
-    const response: Response = await fetch(`${SERVER}/register`, {
+    const route: string = 'register'
+    const response: Response = await fetch(`${SERVER}/${route}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ user_name: user_name, password: password })
     });
-    if (response.status === 409) {
+    const taken_status: number = 409;
+    if (response.status === taken_status) {
       /* A status of 409 means the username was already taken.
        * As this isn't technically an internal error, just return false. */
       Alert.alert('Error', 'Username already taken.');
