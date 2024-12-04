@@ -84,7 +84,8 @@ async function handleChange(username: string, password: string, passwordConfirm:
 async function newPassword(user_name: string, password: string): Promise<boolean> {
   try {
     // Fix to correct route and method type!!
-    const response: Response = await fetch(SERVER + '/nonsense_route', {
+    const route: string = 'nonsense';
+    const response: Response = await fetch(`${SERVER}/${route}`, {
       method: 'DO NOT KNOW',
       headers: {
         'Content-Type': 'application/json'
@@ -92,7 +93,8 @@ async function newPassword(user_name: string, password: string): Promise<boolean
       body: JSON.stringify({ user_name: user_name, password: password })
     });
     // Fix to correct response status!!
-    if (response.status === 409) {
+    const no_username_status: number = 0;
+    if (response.status === no_username_status) {
       /* A status of XXX means this username doesn't exist.
        * As user has already created an account, this is an error on our end. */
       Alert.alert('Error', 'We\'re having trouble accessing your information.');
