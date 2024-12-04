@@ -7,7 +7,7 @@ import { getServer } from './constants';
 /* The link to access our server. */
 const SERVER: string = getServer();
 
-/* Renders a "Change Password" page. */
+/* Renders the "Change Password" page. */
 export default function ChangePassword() {
   /* Parse username from the expo router. */
   var { username } = useLocalSearchParams();
@@ -57,8 +57,10 @@ export default function ChangePassword() {
   );
 };
 
-/* Attempts to send a new user to the database.
- * Returns false if username doesn't exist (which is an internal issue).
+/* Attempts to change a user's password.
+ * Returns false if:
+ * * Username doesn't exist (which is an internal issue).
+ * * User imputs their current password incorrectly.
  * Also returns false and throws error if server error encountered.
  * Returns true if no issues encountered. */
 async function handleChange(username: string, currPassword: string,
@@ -69,7 +71,7 @@ async function handleChange(username: string, currPassword: string,
     return;
   } else if (!currPassword) {
     /* Make sure user entered their password. */
-    Alert.alert('Error', 'Please enter new password.');
+    Alert.alert('Error', 'Please enter your current password.');
     return;
   } else if (!newPassword) {
     /* Make sure user entered their password. */
@@ -96,11 +98,15 @@ async function handleChange(username: string, currPassword: string,
   }
 }
 
+/* Connects to server.
+ * Returns false if user_name not found or old_password doesn't match user_name.
+ * Also returns false and throws error if server error encountered.
+ * Returns true otherwise. */
 async function editPassword(user_name: string, old_password: string,
                             new_password: string): Promise<boolean> {
   try {
     // Fix to correct route and method type!!
-    const route: string = '/changePassword';
+    const route: string = 'changePassword';
     const response: Response = await fetch(`${SERVER}/${route}`, {
       method: 'PUT',
       headers: {
@@ -112,23 +118,21 @@ async function editPassword(user_name: string, old_password: string,
         old_password: old_password,
       })
     });
-    // Fix to correct response status!!
-    const no_username_status: number = 404;
     const wrong_password_status: number = 401;
+    const no_username_status: number = 404;
     if (response.status == wrong_password_status) {
-      /* The user didn't input their correct password right.
-       * Not an internal error, so just return false. */
+      /* User didn't input their current password correctly.
+       * Not a server error, so just return false. */
       Alert.alert('Error', 'Your current password is incorrect.');
       return false;
     } else if (response.status === no_username_status) {
-      console.log(user_name);
-      /* A status of XXX means this username doesn't exist.
-       * As user has already created an account, this is an internal error.
-       * Not a server error, so don't throw an error. */
+      /* This username doesn't exist.
+       * This should never happen, so this is an internal error.
+       * Not a server error, so just return false. */
       Alert.alert('Error', 'We\'re having trouble accessing your information.');
       return false;
     } else if (!response.ok) {
-      /* A server error is most definitely an internal error.
+      /* Server error!
        * Throw the error and let the catch block handle it. */
       throw new Error('Server error');
     } else {
