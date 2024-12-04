@@ -1,38 +1,21 @@
 import React, { useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert } from 'react-native';
+import { getServer } from './constants';
+
+/* The link to access our server. */
+const SERVER: string = getServer();
 
 /* Renders a "Change Password" page. */
 export default function ChangePassword() {
-  // Get this from UseLocalSearchParams.
-  const username: string = ""
+  /* Parse username from the expo router. */
+  var { username } = useLocalSearchParams();
+  const usernameStr: string = (typeof(username) === 'string') ? (username) : ('');
   /* The new user's password entered when creating an account. */
   const [password, setPassword] = useState('');
   /* Password and PasswordConfirm MUST be equal. */
   const [passwordConfirm, setPasswordConfirm] = useState('');
-
-  const handleChange = () => {
-    // Also include a check if the username is available.
-    if (password !== passwordConfirm) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-
-    if (username && password) {
-      // Create an account.
-
-      /* Main idea: Check the backend if the username already exists.
-       * If not, instruct the backend to create a new user entry. */
-      Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-
-      /* Since this is a new account, numProjects will be zero.
-       * This takes the user to the homepage. */
-      router.replace(`./(tabs)/?username=${username}&numProjects=0`);
-    } else {
-      Alert.alert('Error', 'Please enter a new password and confirm it.');
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -54,12 +37,81 @@ export default function ChangePassword() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={() => {handleChange()}}>
+      <Pressable
+        style={styles.button}
+        onPress={() => {handleChange(usernameStr, password, passwordConfirm)}}
+      >
         <Text style={styles.buttonText}>Change Password</Text>
       </Pressable>
     </View>
   );
 };
+
+/* Attempts to send a new user to the database.
+ * Returns false and throws error if username doesn't exist (which is an internal issue).
+ * Also returns false and throws error if server error encountered.
+ * Returns true if no issues encountered. */
+async function handleChange(username: string, password: string, passwordConfirm: string) {
+  if (!username) {
+    /* This case should NEVER happen. */
+    Alert.alert('Internal error encountered.', 'Please try again later.');
+    return;
+  } else if (!password) {
+    /* Make sure user entered their password. */
+    Alert.alert('Error', 'Please enter new password.');
+    return;
+  } else if (!passwordConfirm) {
+    /* Make sure user confirmed their password. */
+    Alert.alert('Error', 'Please confirm new password.');
+    return;
+  } else if (password !== passwordConfirm) {
+    /* Make sure "Password" and "Confirm Password" match. */
+    Alert.alert('Error', 'New passwords do not match.');
+    return;
+  }
+
+  /* Change password for user in the database.
+   * Handles case of username not being found (a major internal error). */
+  const changeAttempt: boolean = await newPassword(username, password);
+  if (changeAttempt) {
+    /* Success! */
+    Alert.alert('Success!', 'Password successfully changed.');
+    /* Take the user back to their profile page. */
+    router.back();
+  }
+}
+
+async function newPassword(user_name: string, password: string): Promise<boolean> {
+  try {
+    // Fix to correct route and method type!!
+    const response: Response = await fetch(SERVER + '/nonsense_route', {
+      method: 'DO NOT KNOW',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_name: user_name, password: password })
+    });
+    // Fix to correct response status!!
+    if (response.status === 409) {
+      /* A status of XXX means this username doesn't exist.
+       * As user has already created an account, this is an error on our end. */
+      Alert.alert('Error', 'We\'re having trouble accessing your information.');
+      throw new Error('Internal error');
+    } else if (!response.ok) {
+      /* A server error is most definitely an internal error.
+       * Throw the error and let the catch block handle it. */
+      throw new Error('Server error');
+    } else {
+      console.log("OK");
+    }
+  } catch(error) {
+    /* Log the error and THEN return false. */
+    console.error('Error setting password:', error);
+    Alert.alert('Error setting password.', 'Please try again later.');
+    return false;
+  }
+  return true;
+}
 
 const styles = StyleSheet.create({
   container: {

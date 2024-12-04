@@ -11,6 +11,7 @@ import { User } from '../types';
 export default function Profile() {
   // Grab the current user's information.
   const user: User = useContext(UserContext);
+  const username: string = user.username;
   // Convert their username into its possessive form.
   const theirs: string = appendApostrophe(user.username);
   return (
@@ -26,7 +27,9 @@ export default function Profile() {
       { /* Row providing link to change password. */ }
       <View style={{ top: 80 }}>
         <Text style={styles.leftText}>Password</Text>
-        <TouchableOpacity onPress={() => router.navigate('../change_password')}>
+        <TouchableOpacity
+          onPress={() => router.navigate(`../change_password?username=${username}`)}
+        >
           <Text style={styles.rightLink}>{"[Edit]"}</Text>
         </TouchableOpacity>
       </View>
