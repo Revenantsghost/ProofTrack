@@ -33,6 +33,7 @@ describe('API Endpoints', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("login_success", true);
+        expect(response.body).toHaveProperty("num_of_projects", 0);
     });
 
     test('PUT /changePassword - Replace the password', async () => {

@@ -105,7 +105,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Attempts to login with {username: STRING, password: STRING}
-// Returns 200 {login_success, true} if username and password are found in database
+// Returns 200 {login_success: true, num_of_projects: INT} if username and password are found in database
 // Returns 404 Incorrect Username or Password
 // Returns 500 Server Error on server failure
 app.post('/login', async (req, res) => {
@@ -114,13 +114,13 @@ app.post('/login', async (req, res) => {
         const { username, password } = req.body; // Extract username and password from the request body
         if (username && password) {
             const pool = await connectToDB();
-            const result = await pool.request().input('user_name', username).query('SELECT password FROM users WHERE user_name=@user_name');
+            const result = await pool.request().input('user_name', username).query('SELECT password, num_of_projects FROM users WHERE user_name=@user_name');
             
             if (result.recordset.length <= 0 || result.recordset[0].password !== password) {
                 res.status(404).send('Incorrect Username or Password, please try again');
                 return;
             }
-            res.status(200).json({ login_success: true });
+            res.status(200).json({ login_success: true, num_of_projects: result.recordset[0].num_of_projects});
         } else {
             res.status(400).send('Bad Request');
         }
