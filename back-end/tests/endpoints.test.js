@@ -26,12 +26,13 @@ describe('API Endpoints', () => {
         expect(response.status).toBe(201);
     });
 
-    test('GET /login - Login into account', async () => {
+    test('POST /login - Login into account', async () => {
         const response = await request(app)
-            .get(`/login?user_name=${user_name}&password=${password}`)
+            .post(`/login`)
+            .send({ username: user_name, password: password})
 
         expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('login_success', true);
+        expect(response.body).toHaveProperty("login_success", true);
     });
 
     test('PUT /changePassword - Replace the password', async () => {

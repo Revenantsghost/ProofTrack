@@ -12,19 +12,55 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if (username && password) {
-      // Perform login action.
+    if (userID && password) {
+      fetch('http://13.64.145.249:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: userID,
+          password: password,
+        }),
+      })
+        .then((response) => {
+          console.log('Response:', response);
+          if (!response.ok) {
+            return response.text().then((text) => {
+              throw new Error(text || 'An error occurred');
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Successful login, show success alert and navigate
+          console.log('Login Success:', data);
+          Alert.alert('Login Successful', `Welcome, ${userID}!`, [
+            {
+              text: 'OK', 
+              onPress: () => {
+                const username = userID;
+                const numProjects = 4;
+  
+                // Proceed with navigation after alert dismissal
+                router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
+              },
+            },
+          ]);
+        })
+        .catch((error) => {
+          // Display error alert
+          console.log('Error:', error);
+          Alert.alert('Error', error.message || 'An unexpected error occurred.');
+        });
 
-      /* Main idea: Check if the username exists.
-       * Then check if the entered password is correct.
-       * If successful, THEN fetch the user's numProjects information.
-       * Then pass said information to the router as its numProjects parameter.
-       * Currently, numProjects is just hardcoded in. */
-      const numProjects: number = 4;
-      Alert.alert('Login Successful', `Welcome, ${username}!`);
+      // // Right now I've switched the username and userID params for demonstration.
+      // // In actuality, you'll enter your userID in the first text bar, not your username.
+      // // THIS MUST BE FIXED ONCE WE FETCH DATA PROPERLY!!
 
-      /* Takes the user to the homepage. */
-      router.replace(`./(tabs)/?username=${username}&numProjects=${numProjects}`);
+      // router.replace(`./(tabs)/?username=${username}&userID=${12345}&numProjects=${numProjects}`);
+      // // The commented-out line is the one that will behave correctly.
+      // //router.replace(`./(tabs)/?username=${username}&userID=${userID}&numProjects=${numProjects}`);
     } else {
       Alert.alert('Error', 'Please enter both email and password.');
     }
