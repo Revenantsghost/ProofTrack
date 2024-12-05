@@ -18,6 +18,8 @@ export default function RootLayout() {
       <Stack.Screen name="submit_proof" options={{ headerShown: true, title: "Submit Proof" }} />
       <Stack.Screen name="login" options={{headerShown: true, title: "Login" }} />
       <Stack.Screen name="media_options" options={{headerShown: true, title: "Media Options" }} />
+      <Stack.Screen name="create_account" options={{headerShown: true, title: "Login"}} />
+      <Stack.Screen name="change_password" options={{headerShown: true, title: "Change Password"}} />
     </Stack>
   );
 }

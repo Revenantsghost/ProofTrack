@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Alert, Button } from 'react-native';
 
 /* Renders a login page that users have to login to.
- * (Currently it accepts any input as a login) */
+ * (Currently it accepts any non-empty input as a successful login) */
 export default function Login() {
-  const [userID, setUserID] = useState('');
+  /* The username that's entered during a login attempt. */
+  const [username, setUsername] = useState('');
+  /* The password that's entered during a login attempt. */
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
@@ -69,10 +72,9 @@ export default function Login() {
 
       <TextInput
         style={styles.input}
-        placeholder="User ID"
-        value={userID}
-        onChangeText={setUserID}
-        keyboardType="email-address"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
@@ -86,6 +88,11 @@ export default function Login() {
       <Pressable style={styles.button} onPress={() => {handleLogin()}}>
         <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
+
+      <Button
+        onPress={() => {router.replace('./create_account')}}
+        title='New user? Create account'
+      />
     </View>
   );
 };
