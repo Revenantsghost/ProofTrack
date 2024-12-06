@@ -2,14 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { UserContext } from './_layout';
 import { router } from 'expo-router';
-import { User } from '../types';
 import { getServer } from '../constants';
 
 const SERVER: string = getServer();
 
 export default function ProjectList() {
   // Use hooks inside the component
-  const user: User = useContext(UserContext);
+  const username: string = useContext(UserContext);
 
   const [projects, setProjects] = useState([
     { projID: '2', title: 'Study biology for an hour' },
@@ -25,7 +24,7 @@ export default function ProjectList() {
   const fetchUserInfo = async () => {
     try {
       /* Adjust username dynamically in route. */
-      const userInfoResponse = await fetch(`${SERVER}/fetchProjects?user_name=${user.username}`, {
+      const userInfoResponse = await fetch(`${SERVER}/fetchProjects?user_name=${username}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }, // Ensure the server knows it's a JSON payload
         }
@@ -52,7 +51,7 @@ export default function ProjectList() {
   }, []);
 
   const handlePress = (item: any) => {
-    router.navigate(`../edit_project?userID=${user.username}&projID=${item.projID}`);
+    router.navigate(`../edit_project?userID=${username}&projID=${item.projID}`);
     console.log('Item ID: ' + item.projID);
   };
 

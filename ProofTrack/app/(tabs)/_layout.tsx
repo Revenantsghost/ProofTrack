@@ -3,18 +3,17 @@ import { Redirect } from 'expo-router';
 import { Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs, useLocalSearchParams } from 'expo-router';
-import { User } from '../types';
 
 // This is a default user, but said context should be overwritten by local search params.
-const defaultUser: User = { username: "User", numProjects: 0 };
-export const UserContext = createContext(defaultUser);
+const defaultUsername: string = "User";
+export const UserContext = createContext(defaultUsername);
 
 /* Renders the tab layout of our app.
  * Also handles parsing user data sent here from login page.
  * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
-  const user: User | undefined = parseUser();
-  if (user === undefined) {
+  const { username } = useLocalSearchParams();
+  if (typeof(username) !== 'string') {
     Alert.alert("Unexpected error occured when retrieving your information.");
     // This means the user's information couldn't be parsed/fetched properly.
     // Rather than crash the app, we signal an error by logging the user out.
@@ -22,7 +21,7 @@ export default function TabLayout() {
   }
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={username}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: '#4A90E2',
@@ -76,29 +75,3 @@ export default function TabLayout() {
     </UserContext.Provider>
   );
 }
-
-/* Parses user information given from local search params.
- * Returns a User record type containing said information.
- * Returns undefined if there's an error parsing the params. */
-function parseUser(): User | undefined {
-  const { username, numProjects } = useLocalSearchParams();
-  // Ensure the passed parameters are all strings.
-  if (typeof(username) !== 'string' || typeof(numProjects) !== 'string') {
-    // Undefined signals an error to the caller.
-    return undefined;
-  }
-  // Ensure we were able to parse number out of numProjects.
-  const parsed_projects: number = parseFloat(numProjects);
-  if (Number.isNaN(parsed_projects)) {
-    // Undefined signals an error to the caller.
-    return undefined;
-  }
-  // Construct a User record type and return it.
-  const user: User = {
-    username: username,
-    numProjects: parsed_projects,
-  }
-  return user;
-}
-
-  
