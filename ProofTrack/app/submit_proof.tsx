@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable} from 'react-native';
-import { User } from './types';
 import { router } from 'expo-router';
 
 // We can't use the context hooks to grab User data (this isn't a child component)

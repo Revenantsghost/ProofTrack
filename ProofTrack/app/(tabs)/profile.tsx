@@ -28,11 +28,12 @@ export default function Profile() {
   }
 
   /* Fetch user's number of projects when the component mounts. */
+  /*
   useEffect(() => {
     populateNumProjects();
-  }, []);
+  }, []); */
   /* I will also try without using useEffect. */
-  // populateNumProjects();
+  populateNumProjects();
 
   return (
     <View>

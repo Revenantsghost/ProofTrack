@@ -1,8 +1,6 @@
-import { useContext, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as React from 'react';
 import { Button, StyleSheet, Text, View } from "react-native";
-import { UserContext } from './(tabs)/_layout';
-import { User } from './types';
 import { Camera, CameraMode, CameraType, CameraView, FlashMode, useCameraPermissions } from "expo-camera";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 import CameraActions from "@/components/CameraActions";
@@ -15,7 +13,6 @@ import CameraTools from "@/components/CameraTools";
 // also displays all of the camera tools
 
 export default function UploadMedia() {
-  const user: User = useContext(UserContext);
   const [permission, requestPermission] = useCameraPermissions();
   const [image, setImage] = useState(null);
   const [isCameraReady, setIsCameraReady] = useState(false); // To check if camera is ready

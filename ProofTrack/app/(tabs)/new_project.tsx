@@ -65,7 +65,7 @@ export default function Index() {
               setHasEndDate(true);
               /* Send the user back to the homepage.
                * This forces the pages to re-mount. */
-              router.replace(`../(tabs)/?username=${username}`);
+              router.replace(`../tabs_redirect?username=${username}`);
             },
           },
         ]);
