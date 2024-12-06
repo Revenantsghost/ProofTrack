@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
+import { getServer } from './constants';
+
+const SERVER: string = getServer();
 
 /* Renders a "Create Account" page.
  * (Currently it accepts any non-empty input as long as passwords match) */
@@ -12,28 +15,6 @@ export default function CreateAccount() {
   const [password, setPassword] = useState('');
   /* Password and PasswordConfirm MUST be equal. */
   const [passwordConfirm, setPasswordConfirm] = useState('');
-
-  const handleCreation = () => {
-    // Also include a check if the username is available.
-    if (password !== passwordConfirm) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-
-    if (username && password) {
-      // Create an account.
-
-      /* Main idea: Check the backend if the username already exists.
-       * If not, instruct the backend to create a new user entry. */
-      Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-
-      /* Since this is a new account, numProjects will be zero.
-       * This takes the user to the homepage. */
-      router.replace(`./(tabs)/?username=${username}&numProjects=0`);
-    } else {
-      Alert.alert('Error', 'Please enter both email and password.');
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -64,7 +45,10 @@ export default function CreateAccount() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={() => {handleCreation()}}>
+      <Pressable
+        style={styles.button}
+        onPress={() => {handleCreation(username, password, passwordConfirm)}}
+      >
         <Text style={styles.buttonText}>Create Account</Text>
       </Pressable>
 
@@ -75,6 +59,80 @@ export default function CreateAccount() {
     </View>
   );
 };
+
+/* Handles a new user's attempt to create an account.
+ * If successful, creates information on new user and sends them to main app.
+ * If unsuccessful, alerts the User of the problem and benignly returns.
+ * Unsuccessful if:
+ * * Username already taken.
+ * * Not all fields entered.
+ * * Passwords don't match. */
+async function handleCreation(username: string, password: string, passwordConfirm: string) {
+  if (!username) {
+    /* Make sure user entered their username. */
+    Alert.alert('Error', 'Please enter your username.');
+    return;
+  } else if (!password) {
+    /* Make sure user entered their password. */
+    Alert.alert('Error', 'Please enter your password.');
+    return;
+  } else if (!passwordConfirm) {
+    /* Make sure user confirmed their password. */
+    Alert.alert('Error', 'Please confirm your password.');
+    return;
+  } else if (password !== passwordConfirm) {
+    /* Make sure "Password" and "Confirm Password" match. */
+    Alert.alert('Error', 'Passwords do not match.');
+    return;
+  }
+  
+  /* Attempt to create a user and send to backend.
+   * Handles the case of username already being taken. */
+  const sendAttempt: boolean = await sendNewUser(username, password);
+  if (sendAttempt) {
+    /* A friendly welcome message! */
+    Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
+    /* Since this is a new account, numProjects will be zero.
+     * This takes the user to the homepage. */
+    router.replace(`./(tabs)/?username=${username}&numProjects=0`);
+  }
+}
+
+/* Attempts to send a new user to the database.
+ * Returns false if username already taken.
+ * Throws an error (and then returns false) if server error encountered.
+ * Returns true if no issues encountered. */
+async function sendNewUser(user_name: string, password: string): Promise<boolean> {
+  try {
+    const route: string = 'register'
+    const response: Response = await fetch(`${SERVER}/${route}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_name: user_name, password: password })
+    });
+    const taken_status: number = 409;
+    if (response.status === taken_status) {
+      /* A status of 409 means the username was already taken.
+       * As this isn't technically an internal error, just return false. */
+      Alert.alert('Error', 'Username already taken.');
+      return false;
+    } else if (!response.ok) {
+      /* A server error is most definitely an internal error.
+       * Throw the error and let the catch block handle it. */
+      throw new Error('Server error');
+    } else {
+      console.log("OK");
+    }
+  } catch(error) {
+    /* Log the error and THEN return false. */
+    console.error('Error fetching profile:', error);
+    Alert.alert('Error setting up profile.', 'Please try again later.');
+    return false;
+  }
+  return true;
+}
 
 const styles = StyleSheet.create({
   container: {
