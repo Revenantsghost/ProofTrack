@@ -68,7 +68,7 @@ async function handleLogin(username: string, password: string) {
   }
 
   /* Attempt to get a record type pertaining to this user.
-   * Handles the case of incorrect username/password. */
+   * Handles the case of invalid username/password. */
   const user: User | undefined = await attemptLogin(username, password);
   if (user !== undefined) {
     /* A friendly welcome message! */
@@ -79,7 +79,7 @@ async function handleLogin(username: string, password: string) {
 
 /* Attempts to log the user in.
  * Upon success, constructs a User record type and returns it.
- * If user inputs incorrect username/password, returns undefined.
+ * If user inputs invalid username/password, returns undefined.
  * Throws an error (and then returns undefined) if server error encountered. */
 async function attemptLogin(username: string, password: string): Promise<User | undefined> {
   const route: string = 'login';
@@ -94,11 +94,11 @@ async function attemptLogin(username: string, password: string): Promise<User | 
         password: password,
       }),
     });
-    const login_failed_status: number = 404;
-    if (response.status == login_failed_status) {
+    const invalid_login_status: number = 404;
+    if (response.status == invalid_login_status) {
       /* Invalid username/password status.
        * Not an error, but still return undefined. */
-      Alert.alert('Login failed.', 'Incorrect username or password.');
+      Alert.alert('Login failed.', 'Invalid username or password.');
       return undefined;
     } else if (!response.ok) {
       /* Server error!
