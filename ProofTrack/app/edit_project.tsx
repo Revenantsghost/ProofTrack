@@ -63,25 +63,25 @@ export default async function EditProject() {
       }
 
       // Fetch images for the project
-        const fetchImages = async () => {
-        try{
-          const imageResponse = await fetch(`http://13.64.145.249:3000/media/${projInfo.username}/${projInfo.projID}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          })
-          if (!imageResponse.ok) {
-            throw new Error('Failed to fetch media files');
-          }
-          const data = await imageResponse.json();
-
-          if (data.success) {
-            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
-              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
-            );
-            console.log(fetchImages);
-            setImages(fetchedImages);
-          }
+      const fetchImages = async () => {
+      try{
+        const imageResponse = await fetch(`http://13.64.145.249:3000/media/${projInfo.username}/${projInfo.projID}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        if (!imageResponse.ok) {
+          throw new Error('Failed to fetch media files');
         }
+        const data = await imageResponse.json();
+
+        if (data.success) {
+          const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
+            `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
+          );
+          console.log(fetchImages);
+          setImages(fetchedImages);
+        }
+      }
       catch(error) {
         console.error('Error fetching media files:', error);
       }

@@ -8,12 +8,7 @@ export default function ProjectList() {
   // Use hooks inside the component
   const user: User = useContext(UserContext);
 
-  const [projects, setProjects] = useState([
-    { projID: '2', title: 'Study biology for an hour' },
-    { projID: '3', title: 'Lose 20lb before the Summer' },
-    { projID: '4', title: 'Run on the treadmill for 30min' },
-    { projID: '5', title: 'Clean my room' },
-  ]);
+  const [projects, setProjects] = useState([]);
 
   /**
    * Fetches projects for the current user from the server.
@@ -37,7 +32,7 @@ export default function ProjectList() {
         projID: p.proj_id,
         title: p.proj_name,
       }));
-      setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
+      setProjects(fetchedProjects);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -57,7 +52,7 @@ export default function ProjectList() {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={projects}
-        keyExtractor={(item) => item.projID}
+        keyExtractor={(item) => item['projID']}
         renderItem={({ item }) => <ItemRow item={item} onPress={handlePress} />}
         ItemSeparatorComponent={ItemSeparator}
       />
