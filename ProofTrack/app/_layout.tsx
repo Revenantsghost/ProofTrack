@@ -20,7 +20,7 @@ export default function RootLayout() {
       <Stack.Screen name="media_options" options={{headerShown: true, title: "Media Options" }} />
       <Stack.Screen name="create_account" options={{headerShown: true, title: "Create Account"}} />
       <Stack.Screen name="change_password" options={{headerShown: true, title: "Change Password"}} />
-      <Stack.Screen name="edit_project" options={{headerShown: true, title: "Edit Project"}} />
+      <Stack.Screen name="edit_project" options={{headerShown: true, title: "View/Edit Project"}} />
     </Stack>
   );
 }

@@ -4,6 +4,9 @@ import { UserContext } from './_layout';
 import { User } from '../types';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
+import { getServer } from '../constants';
+
+const SERVER: string = getServer();
 
 export default function Index() {
   const user: User = useContext(UserContext);
@@ -35,7 +38,7 @@ export default function Index() {
     console.log('Project Created:', projectData);
     try {
       // Send POST request to create the project
-      const response = await fetch('http://13.64.145.249:3000/uploadProject', {
+      const response = await fetch(`${SERVER}/uploadProject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

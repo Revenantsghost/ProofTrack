@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Project, ProjectInfo } from './types';
+import { getServer } from './constants';
+
+const SERVER: string = getServer();
 
 /**
  * Parses project information from local search parameters. Furnishes params for endpoint
@@ -26,54 +29,55 @@ function parseProject(): ProjectInfo | undefined {
   return { username: user_ID, projID: proj_ID };
 }
 
-export default async function EditProject() {
+export default function EditProject() {
   const projInfo = parseProject();
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<string[]>([]); // State for images
 
-  //Fetch project details on component mount
+  /* Fetch project details on component mount. */
   useEffect(() => {
     if (projInfo) {
-      //Utilize async/await to anticipate fetch
+      /* Utilize async/await to anticipate fetch. */
       const fetchInfo = async () => {
         try{
-          //Fetch project details, provide endpoint params using projInfo
-          const infoResponse = await fetch(`http://13.64.145.249:3000/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
+          /* Fetch project details, provide endpoint params using projInfo. */
+          const infoResponse = await fetch(`${SERVER}/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
             })
-            //Error checking
+            /* Error checking. */
             if (!infoResponse.ok) {
+              console.log(`Info Response Not Okay. Status: ${infoResponse.status}`);
               throw new Error('Failed to fetch project data');
             }
-            const data = await infoResponse.json(); //Processs response into JSON
+            const data = await infoResponse.json(); // Processs response into JSON.
             const fetchedProject: Project = {
               username: projInfo.username,
               name: data.project_name,
               projID: data.proj_id,
               notificationFrequency: data.checkpoint_frequency,
               duration: data.duration,
-              images: [], // Placeholder, images will be fetched separately
+              images: [], // Placeholder, images will be fetched separately.
             };
-            setProject(fetchedProject); //Set program variables
+            setProject(fetchedProject); // Set program variables.
         }
         catch(error){
           console.error('Error fetching media files:', error);
         }
       }
 
-      // Fetch images for the project
+      // Fetch images for the project.
         const fetchImages = async () => {
         try{
-          const imageResponse = await fetch(`http://13.64.145.249:3000/media/${projInfo.username}/${projInfo.projID}`, {
+          const imageResponse = await fetch(`${SERVER}/media/${projInfo.username}/${projInfo.projID}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           })
           if (!imageResponse.ok) {
+            console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }
           const data = await imageResponse.json();
-
           if (data.success) {
             const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
               `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
