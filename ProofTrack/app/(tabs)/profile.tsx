@@ -45,7 +45,7 @@ export default function Profile() {
       <View style={{ top: 310 }}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => router.navigate('../login')}
+          onPress={() => router.replace('../login')}
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
