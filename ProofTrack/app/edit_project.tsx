@@ -26,7 +26,7 @@ function parseProject(): ProjectInfo | undefined {
   return { username: user_ID, projID: proj_ID };
 }
 
-export default async function EditProject() {
+export default function EditProject() {
   const projInfo = parseProject();
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<string[]>([]); // State for images
