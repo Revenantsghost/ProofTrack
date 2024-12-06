@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FlatList, SafeAreaView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { UserContext } from './_layout';
-import { User } from '../types';
 import { router } from 'expo-router';
+import { User } from '../types';
+import { getServer } from '../constants';
+
+const SERVER: string = getServer();
 
 export default function ProjectList() {
   // Use hooks inside the component
@@ -16,9 +19,8 @@ export default function ProjectList() {
    */
   const fetchUserInfo = async () => {
     try {
-      const userInfoResponse = await fetch(
-        `http://13.64.145.249:3000/fetchProjects?user_name=${user.username}`, // Adjust username dynamically
-        {
+      /* Adjust username dynamically in route. */
+      const userInfoResponse = await fetch(`${SERVER}/fetchProjects?user_name=${user.username}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }, // Ensure the server knows it's a JSON payload
         }
@@ -33,6 +35,7 @@ export default function ProjectList() {
         title: p.proj_name,
       }));
       setProjects(fetchedProjects);
+      console.log("Fetch Projects OK.");
     } catch (error) {
       console.error('Error fetching profile:', error);
     }

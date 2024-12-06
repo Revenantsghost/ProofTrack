@@ -6,18 +6,18 @@ import { Tabs, useLocalSearchParams } from 'expo-router';
 import { User } from '../types';
 
 // This is a default user, but said context should be overwritten by local search params.
-const defaultUser: User = { username: "User", userID: 0, numProjects: 0 };
+const defaultUser: User = { username: "User", numProjects: 0 };
 export const UserContext = createContext(defaultUser);
 
-/* To render the tab layout of our app.
+/* Renders the tab layout of our app.
  * Also handles parsing user data sent here from login page.
  * Redirects back to login if error encountered while parsing. */
 export default function TabLayout() {
   const user: User | undefined = parseUser();
   if (user === undefined) {
     Alert.alert("Unexpected error occured when retrieving your information.");
-    // It may look strange, but this is what's necessary to redirect to ../index.tsx!
-    // Upon error, this redirects the user back to the login page.
+    // This means the user's information couldn't be parsed/fetched properly.
+    // Rather than crash the app, we signal an error by logging the user out.
     return <Redirect href='../login' />
   }
 
@@ -81,23 +81,21 @@ export default function TabLayout() {
  * Returns a User record type containing said information.
  * Returns undefined if there's an error parsing the params. */
 function parseUser(): User | undefined {
-  const { username, userID, numProjects } = useLocalSearchParams();
+  const { username, numProjects } = useLocalSearchParams();
   // Ensure the passed parameters are all strings.
-  if (typeof(username) !== 'string' || typeof(userID) !== 'string'
-                                    || typeof(numProjects) !== 'string') {
+  if (typeof(username) !== 'string' || typeof(numProjects) !== 'string') {
     // Undefined signals an error to the caller.
     return undefined;
   }
-  // Ensure we were able to parse numbers out of userID and numProjects.
-  const parsed_ID: number = parseFloat(userID as string);
-  const parsed_projects: number = parseFloat(numProjects as string);
-if (Number.isNaN(parsed_ID) || Number.isNaN(parsed_projects)) {
+  // Ensure we were able to parse number out of numProjects.
+  const parsed_projects: number = parseFloat(numProjects);
+  if (Number.isNaN(parsed_projects)) {
     // Undefined signals an error to the caller.
     return undefined;
   }
+  // Construct a User record type and return it.
   const user: User = {
-    username: username as string,
-    userID: parsed_ID,
+    username: username,
     numProjects: parsed_projects,
   }
   return user;

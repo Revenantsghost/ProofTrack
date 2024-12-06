@@ -1,7 +1,7 @@
-import React, {useContext } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { UserContext } from './_layout';
 import { User } from '../types';
 
@@ -11,6 +11,7 @@ import { User } from '../types';
 export default function Profile() {
   // Grab the current user's information.
   const user: User = useContext(UserContext);
+  const username: string = user.username;
   // Convert their username into its possessive form.
   const theirs: string = appendApostrophe(user.username);
   return (
@@ -23,29 +24,28 @@ export default function Profile() {
       <View style={{ top: 50 }}>
         <Text style={styles.titleText}>{theirs} Profile</Text>
       </View>
-      { /* Row providing link to change username. */ }
-      <View style={{ top: 70 }}>
-        <Text style={styles.leftText}>Username</Text>
-        <Link href="../profile" style={styles.rightLink}>{"[Edit]"}</Link>
-      </View>
       { /* Row providing link to change password. */ }
-      <View style={{ top: 120 }}>
+      <View style={{ top: 80 }}>
         <Text style={styles.leftText}>Password</Text>
-        <Link href="./profile" style={styles.rightLink}>{"[Edit]"}</Link>
+        <TouchableOpacity
+          onPress={() => router.navigate(`../change_password?username=${username}`)}
+        >
+          <Text style={styles.rightLink}>{"[Edit]"}</Text>
+        </TouchableOpacity>
       </View>
       { /* User statistics header text. */ }
-      <View style={{ top: 210 }}>
+      <View style={{ top: 150 }}>
         <Text style={styles.titleText}>{theirs} Statistics</Text>
       </View>
       { /* Row displaying user's number of projects. */ }
-      <View style={{ top: 230 }}>
+      <View style={{ top: 180 }}>
         <Text style={styles.leftText}>Projects</Text>
         <Text style={styles.rightText}>{user.numProjects}</Text>
       </View>
       <View style={{ top: 310 }}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => (router.replace('../login'))}
+          onPress={() => router.replace('../login')}
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
@@ -53,9 +53,6 @@ export default function Profile() {
     </View> 
   );
 }
-
-/* I'll also include Modals that pop up when you
- * tap "[Edit]" for your username or password. */
 
 /* Returns a name in its possessive form.
  * Ex: Kyle -> Kyle's
@@ -95,19 +92,32 @@ const styles = StyleSheet.create({
     color: "#4A90E2",
   },
   logoutButton: {
-    elevation: 8,
     backgroundColor: '#CD001A',
-    borderRadius: 10,
+    borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginLeft: 30,
     marginRight: 30,
-    marginBottom: 40,
   },
   buttonText: {
     fontSize: 20,
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
-  }
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
 });
