@@ -55,14 +55,14 @@ export default function EditProject() {
               username: projInfo.username,
               name: data.project_name,
               projID: data.proj_id,
-              notificationFrequency: data.checkpoint_frequency,
+              notificationFrequency: data.checkpointFrequency,
               duration: data.duration,
               images: [], // Placeholder, images will be fetched separately.
             };
             setProject(fetchedProject); // Set program variables.
         }
         catch(error){
-          console.error('Error fetching media files:', error);
+          console.error('Error fetching project info:', error);
         }
       }
 

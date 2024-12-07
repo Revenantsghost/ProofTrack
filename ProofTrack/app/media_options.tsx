@@ -6,7 +6,7 @@ import ImageViewer from "@/components/ImageViewer";
 // import Button from '@/components/Button';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams, Redirect } from 'expo-router';
 import PictureView from '@/components/PictureView';
 
 // This is the page that shows the default or uploaded picture
@@ -20,8 +20,16 @@ export interface MediaOptionsRouteParams {
 }
 
 export default function media_options() {
-    const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+    const { username, projID } = useLocalSearchParams();
+    if (typeof(username) !== 'string' || typeof(projID) !== 'string') {
+      Alert.alert('Internal error encountered.', 'Unable to parse your information.');
+      /* The user's username and/or the project ID couldn't be parsed properly.
+       * This means something's wrong with useLocalSearchParams.
+       * This is not expected to happen, but signal an error by logging the user out. */
+      return <Redirect href='../login' />
+    }
 
+    const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
     const pickImageAsync = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -53,6 +61,13 @@ export default function media_options() {
         if (!selectedImage) {
             Alert.alert("Error", "Please choose or take a photo before submitting.");
           } else {
+            // Hiiiii Anika. This is where I'd recommend sending the image to the database.
+            const project_id_number: string = projID;
+            const user_name: string = username;
+            const image_as_string: string = selectedImage;
+            
+            /*** Sending logic goes here ***/
+
             Alert.alert("Success", "Photo submitted successfully!");
             /* Right now, it's set to router.back().
              * If we do router.navigate, it causes an error because currently
