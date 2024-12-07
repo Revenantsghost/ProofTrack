@@ -65,7 +65,7 @@ export default function media_options() {
         const user_name: string = username;
         const image_as_string: string = selectedImage;
             
-        /*** This is where to include the image-sending login. ***/
+        /*** This is where to include the image-sending logic. ***/
 
         Alert.alert("Success", "Photo submitted successfully!");
         /* Right now, it's set to router.back().
