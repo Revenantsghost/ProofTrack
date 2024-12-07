@@ -3,6 +3,12 @@ import { Alert } from 'react-native';
 import ListOfProjects from './components/list_of_projects';
 import { router, useLocalSearchParams, Redirect } from 'expo-router';
 
+/** 
+ * Renders an individual item row in the list.
+ * 
+ * @returns {JSX.Element} A list of pressable item row components.
+ * Pressing a component will prompt the user to submit proof for its corresponding project.
+ */
 export default function SubmitProof() {
   const { username } = useLocalSearchParams();
   if (typeof(username) !== 'string') {
@@ -13,7 +19,13 @@ export default function SubmitProof() {
     return <Redirect href='../login' />
   }
 
-  const goToProofSubmission = (projID: number) => {
+  /** 
+   * Renders an individual item row in the list.
+   * 
+   * @param projID A project's unique ID "number".
+   * Takes the user to the "Submit Proof" page corresponding to the projID.
+   */
+  const goToProofSubmission = (projID: string) => {
     console.log(`Going to submit proof for project number: ${projID}`);
     router.navigate(`./media_options?username=${username}&projID=${projID}`);
   }
@@ -21,7 +33,7 @@ export default function SubmitProof() {
   return (
     <ListOfProjects 
       username={username}
-      handleProjectPress={(projID: number) => {goToProofSubmission(projID)}}
+      handleProjectPress={(projID: string) => {goToProofSubmission(projID)}}
     />
   );
 }

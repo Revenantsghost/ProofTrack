@@ -4,17 +4,33 @@ import { getServer } from '../constants';
 
 const SERVER: string = getServer();
 
+/* Type aliasing to make the `projects` state field more clear. */
+type ProjectEntry = {
+  /* The project's title. */
+  title: string,
+  /* The project's UNIQUE ID "number". */
+  projID: string,
+}
+
 /* Props! */
 type ListOfProjectProps = {
   /* The current user's username. */
   username: string,
   /* An event handler. Called when a project item is tapped. */
-  handleProjectPress: (projID: number) => void,
+  handleProjectPress: (projID: string) => void,
 }
 
+/** 
+ * Renders an individual item row in the list.
+ * 
+ * @param props Defined above.
+ * @returns {JSX.Element} A list of pressable item row components.
+ * What they do when pressed is defined in @props (handleProjectPress).
+ */
 export default function ListOfProjects(props: ListOfProjectProps ) {
-
-  const [projects, setProjects] = useState([]);
+  /* Undefined only when loading/fetching user's projects from the backend.
+   * Therefore an empty list means the user has no projects. */
+  const [projects, setProjects] = useState<ProjectEntry[] | undefined>(undefined);
 
   /**
    * Fetches projects for the current user from the server.
@@ -23,7 +39,8 @@ export default function ListOfProjects(props: ListOfProjectProps ) {
   const fetchUserInfo = async () => {
     try {
       /* Adjust username dynamically in route. */
-      const userInfoResponse = await fetch(`${SERVER}/fetchProjects?user_name=${props.username}`, {
+      const route: string = 'fetchProjects';
+      const userInfoResponse = await fetch(`${SERVER}/${route}?user_name=${props.username}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }, // Ensure the server knows it's a JSON payload
         }
@@ -44,20 +61,47 @@ export default function ListOfProjects(props: ListOfProjectProps ) {
     }
   };
 
-  // Fetch user info when the component mounts
+  /* Fetch user info when the component mounts. */
   useEffect(() => {
     fetchUserInfo();
   }, []);
 
+  /* Projects are still loading. */
+  if (projects === undefined) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Loading projects...</Text>
+      </View>
+    );
+  }
+  
+  /* Projects are finished loading, but the user has zero projects. */
+  if (projects.length === 0){
+    return (
+      <View style={styles.container}>
+        <Text
+          style={{
+            fontSize: 20,
+            marginBottom: 20,
+            textAlign: 'center',
+          }}
+        >
+          You have no projects.
+        </Text>
+      </View>
+    );
+  }
+
+  /* Projects are finished loading and the user has at least one project. */
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={projects}
-        keyExtractor={(item) => item['projID']}
+        keyExtractor={(item) => item.projID}
         renderItem={({ item }) =>
           <ItemRow
             item={item}
-            onPress={() => {props.handleProjectPress(item['projID'])}}
+            onPress={() => {props.handleProjectPress(item.projID)}}
           />}
         ItemSeparatorComponent={ItemSeparator}
       />
@@ -94,6 +138,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     backgroundColor: '#f8f8f8',
+  },
+  loadingText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   item: {
     padding: 15,
