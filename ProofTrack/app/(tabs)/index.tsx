@@ -13,13 +13,12 @@ export default function Index() {
 
       <TouchableOpacity
         style={styles.roundButton}
-        onPress={() => {router.navigate('../submit_proof')}}
+        onPress={() => {router.navigate(`../submit_proof?username=${user.username}`)}}
       >
         <Ionicons name="camera" size={48} color="white" />
       </TouchableOpacity>
     </View>
   );
-
 }
 
 const styles = StyleSheet.create({

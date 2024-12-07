@@ -22,7 +22,7 @@ export type Project = {
   images: string[],
 }
 
-export type ProjectInfo= {
+export type ProjectInfo = {
   username: string,
   projID: number,
 }
