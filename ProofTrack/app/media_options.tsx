@@ -62,6 +62,9 @@ export default function media_options() {
             Alert.alert("Error", "Please choose or take a photo before submitting.");
           } else {
             // Hiiiii Anika. This is where I'd recommend sending the image to the database.
+            const project_id_number: string = projID;
+            const user_name: string = username;
+            const image_as_string: string = selectedImage;
             
             /*** Sending logic goes here ***/
 
