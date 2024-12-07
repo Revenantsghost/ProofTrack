@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Pressable, Alert, Button } from 'react-native';
-import { Image } from 'expo-image';
+import React from 'react';
+import { View, StyleSheet, Alert, Button } from 'react-native';
 import ImageViewer from "@/components/ImageViewer";
-/* This different usage of button broke things. */
-// import Button from '@/components/Button';
-import * as ImagePicker from 'expo-image-picker';
+import { launchCameraAsync, launchImageLibraryAsync } from 'expo-image-picker';
+import { ImagePickerResult } from 'expo-image-picker';
 import { useState } from 'react';
 import { router, useLocalSearchParams, Redirect } from 'expo-router';
-import PictureView from '@/components/PictureView';
 
 // This is the page that shows the default or uploaded picture
 // It gives users the option to either choose a photo or take a new photo
@@ -32,7 +29,7 @@ export default function media_options() {
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
     const pickImageAsync = async () => {
-      const result = await ImagePicker.launchImageLibraryAsync({
+      const result: ImagePickerResult = await launchImageLibraryAsync({
         allowsEditing: true,
         quality: 1,
       });
@@ -45,7 +42,7 @@ export default function media_options() {
     };
       
     const takePictureAsync = async () => {
-      const result = await ImagePicker.launchCameraAsync({
+      const result: ImagePickerResult = await launchCameraAsync({
         allowsEditing: true,
         quality: 1,
       });

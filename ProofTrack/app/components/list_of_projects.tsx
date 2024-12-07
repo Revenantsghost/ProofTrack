@@ -102,7 +102,8 @@ export default function ListOfProjects(props: ListOfProjectProps ) {
           <ItemRow
             item={item}
             onPress={() => {props.handleProjectPress(item.projID)}}
-          />}
+          />
+        }
         ItemSeparatorComponent={ItemSeparator}
       />
     </SafeAreaView>

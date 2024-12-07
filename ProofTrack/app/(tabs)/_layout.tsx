@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, Context } from 'react';
 import { Redirect } from 'expo-router';
 import { Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -6,7 +6,7 @@ import { Tabs, useLocalSearchParams } from 'expo-router';
 
 // This is a default user, but said context should be overwritten by local search params.
 const defaultUsername: string = "User";
-export const UserContext = createContext(defaultUsername);
+export const UserContext: Context<string> = createContext(defaultUsername);
 
 /* Renders the tab layout of our app.
  * Also handles parsing user data sent here from login page.
