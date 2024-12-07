@@ -32,48 +32,48 @@ export default function media_options() {
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
     const pickImageAsync = async () => {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
         quality: 1,
-    });
+      });
     
-    if (!result.canceled) {
-         setSelectedImage(result.assets[0].uri);
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
       } else {
         alert('You did not select any image.');
       }
     };
-    
+      
     const takePictureAsync = async () => {
-        const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            quality: 1,
-        });
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 1,
+      });
 
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        } else {
-            alert('You did not take a picture.');
-        }
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
+      } else {
+        alert('You did not take a picture.');
+      }
     };
 
     const onSubmit = () => {
-        if (!selectedImage) {
-            Alert.alert("Error", "Please choose or take a photo before submitting.");
-          } else {
-            const project_id_number: string = projID;
-            const user_name: string = username;
-            const image_as_string: string = selectedImage;
+      if (!selectedImage) {
+        Alert.alert("Error", "Please choose or take a photo before submitting.");
+      } else {
+        const project_id_number: string = projID;
+        const user_name: string = username;
+        const image_as_string: string = selectedImage;
             
-            /*** This is where to include the image-sending login. ***/
+        /*** This is where to include the image-sending login. ***/
 
-            Alert.alert("Success", "Photo submitted successfully!");
-            /* Right now, it's set to router.back().
-             * If we do router.navigate, it causes an error because currently
-             * _layout.tsx requires params in router.navigate().
-             * This can be changed back to navigate if local params are provided. */
-            router.back();
-          }
+        Alert.alert("Success", "Photo submitted successfully!");
+        /* Right now, it's set to router.back().
+         * If we do router.navigate, it causes an error because currently
+         * _layout.tsx requires params in router.navigate().
+         * This can be changed back to navigate if local params are provided. */
+        router.back();
+      }
     };
 
     return (
