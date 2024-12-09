@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 
@@ -7,20 +8,29 @@ const { connectToDB, closeDB } = require('./db');
 const fs = require("fs");
 
 const multer = require("multer"); // for handling file uploads
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);  // Log the incoming request method and URL
+    console.log(`${req.method} ${req.url}`);  
     next();
 });
 
- const upload = multer({ dest: "uploads/" }); // temp upload location
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/'); // Store files in the 'uploads' directory
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname); // Generate a unique filename
+    },
+  });
+ const upload = multer({ dest: "uploads/", storage: storage }); // temp upload location
 
  const { submitProof } = require("./mediaInteraction.js");
 
-
+  
 //TESTING ONLY
  app.get('/ping', (req, res) => {
     console.log("Ping route hit");
@@ -28,24 +38,63 @@ app.use((req, res, next) => {
 });
 
 // Endpoint to submit proof
-app.post("/submit-proof", upload.single("file"), async (req, res) => {
-    const filePath = req.file.path;  
-    const projectId = req.body.projectId;
-    const userId = req.body.userId;
+app.post('/submit-proof', upload.single('file'), async (req, res) => {
+    const { mediaType, projID, username } = req.body;
+    const file = req.file; // Multer automatically adds the file to `req.file`
 
-    if (!filePath || !projectId || !userId) {
-        return res.status(400).send({ message: "file, projectId, and userId are required." });
+    const missingFields = [];
+    if (!file) {
+        missingFields.push('file');
+    }
+    if (!projID) {
+        missingFields.push('projID');
+    }
+    if (!username) {
+        missingFields.push('username');
+    }
+
+    if (missingFields.length > 0) {
+        return res.status(400).send({
+            message: `Missing required fields: ${missingFields.join(', ')}. File present: ${file}`
+        });
     }
 
     try {
-        await submitProof(filePath, projectId, userId);
-        fs.unlinkSync(filePath);  // Delete temporary file
-        res.status(200).send({ message: "Proof submitted successfully." });
+        // Use the file directly from the uploads folder
+        const filePath = file.path;
+
+        // Call the final method to submit proof
+        await submitProof(filePath, mediaType, projID, username);
+
+        // If necessary, clean up the file here or keep it in the uploads folder
+        // fs.unlinkSync(filePath);
+
+        res.status(200).send({ message: 'Proof submitted successfully.' });
     } catch (error) {
-        console.error("Error submitting proof:", error);
-        res.status(500).send({ message: "An error occurred while submitting proof." });
+        console.error('Error processing proof submission:', error.message);
+        res.status(500).send({ message: 'Internal server error.' });
     }
 });
+// app.post("/submit-proof", upload.single("file"), async (req, res) => {
+//     const filePath = req.file.path;  
+//     const projectId = req.body.projectId;
+//     const username = req.body.username;
+
+//     if (!filePath || !projectId || !username) {
+//         return res.status(400).send({ message: "file, projectId, and username are required." });
+//     }
+
+//     try {
+//         console.log("File path:", filePath);  // Debugging log
+//         await submitProof(filePath, projectId, username);
+//         fs.unlinkSync(filePath);  // Delete temporary file
+//         res.status(200).send({ message: "Proof submitted successfully." });
+//     } catch (error) {
+//         console.error("Error submitting proof:", error);
+//         res.status(500).send({ message: "An error occurred while submitting proof." });
+//     }
+// });
+
 
 /**
  * Endpoint to retrieve all media files for a specific project and user
@@ -365,4 +414,3 @@ process.on('SIGINT', async () => {
 
 
 module.exports = app;
-

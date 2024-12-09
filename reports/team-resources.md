@@ -16,7 +16,6 @@ Communication Channels/Tools
   - In-Person Meetings, which include Tuesdays during class time and Sundays/Mondays at 6pm-7pm through Discord
   - Major documents are within our google drive: https://drive.google.com/drive/folders/1vRMqpT5uPl_THWUgNijdfkbNplDecy_Z?usp=sharing  
   - For project issues, we will use the Discord “Issues” feature.
-  - Using Figma to design our app and the UI components
 
 
   
