@@ -3,11 +3,12 @@ const fs = require("fs");
 require('dotenv').config();
 const mysql = require('mssql');
 
+const multer = require("multer");
+const path = require("path");
+
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 
-module.exports = { submitProof };
-module.exports = { getMediaFiles };
 
 
 const config = {
@@ -22,63 +23,69 @@ const config = {
     port: parseInt(process.env.AZURE_SQL_PORT, 10)
 };
 
-function hash(filePath) {
-    const file = filePath.toString()
-    let hashed = 0
-    for(let i = 0; i<file.length; i++) {
-        let intValue = file.charAt(i).charCodeAt(0) - '0'.charCodeAt(0);
-        hashed +=  Math.pow(intValue, i) * Math.pow(31, i)
-    }
-    return hashed.toString()
-
-}
-
-async function uploadMediaToBlob(filePath, projectId, userId) {
+async function uploadMediaToBlob(filePath, mimeType, projectId, username) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    
-
-    const blobName = filePath.split("/").pop(); // Extract the file name
+    const extension = mimeType.split('/')[1]; // Extract extension from mimeType
+    const blobName = `${projectId}/${username}/${Date.now()}.${extension}`;
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
-    // Determine content type
-    let contentType = "";
-    if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
-        contentType = "image/jpeg";
-    } else if (filePath.endsWith(".png")) {
-        contentType = "image/png";
-    } else if (filePath.endsWith(".mp4")) {
-        contentType = "video/mp4";
-    } else {
-        console.error("Unsupported file type.");
-        return;
-    }
-    hashedVal = hash(filePath)
-    const metadata = {
-        project_id: projectId,
-        user_id: userId,
-        hash: hashedVal
-    };
-
-    console.log(metadata)
-
-    // Upload blob
-    const options = {
-        blobHTTPHeaders: {
-            blobContentType: contentType,
-        },
-        metadata: metadata,
-    };
-
-    const stream = fs.createReadStream(filePath);
-    const stat = fs.statSync(filePath);
+    const metadata = { project_id: projectId, user_name: username };
 
     try {
-        await blobClient.uploadStream(stream, stat.size, undefined, options);
-        console.log(`File '${blobName}' uploaded successfully with project_id '${projectId} and user_id '${userId}'.`);
+        const buffer = fs.readFileSync(filePath);
+        const options = {
+            blobHTTPHeaders: { blobContentType: mimeType }, // Set the correct Content-Type
+            metadata,
+        };
+
+        await blobClient.uploadData(buffer, options);
+        console.log(`File uploaded: ${blobName}`);
+        return blobName;
     } catch (error) {
-        console.error("Error uploading file:", error.message);
+        console.error('Error uploading blob:', error.message);
+        throw error;
     }
+
+
+   // const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    // const containerClient = blobServiceClient.getContainerClient(containerName);
+    // const blobName = `${projectId}/${username}/${Date.now()}_${filePath.split("/").pop()}`;
+    // const blobClient = containerClient.getBlockBlobClient(blobName);
+
+    // // Determine content type
+    // let contentType = filePath.endsWith(".png")
+    //     ? "image/png"
+    //     : filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")
+    //     ? "image/jpeg"
+    //     : filePath.endsWith(".mp4")
+    //     ? "video/mp4"
+    //     : null;
+
+    // if (!contentType) {
+    //     console.error("Unsupported file type.");
+    //     return;
+    // }
+
+    // const metadata = { project_id: projectId, user_name: username };
+
+    // try {
+    //     const options = {
+    //         blobHTTPHeaders: { blobContentType: contentType },
+    //         metadata,
+    //     };
+
+    //     const stream = fs.createReadStream(filePath);
+    //     const stat = fs.statSync(filePath);
+
+    //     await blobClient.uploadStream(stream, stat.size, undefined, options);
+    //     await insertBlobMetadata(username, projectId, blobName);
+
+    //     console.log(`File uploaded: ${blobName}`);
+    //     return blobName;
+    // } catch (error) {
+    //     console.error("Error uploading blob:", error.message);
+    // }
 }
 
 // testing
@@ -87,193 +94,117 @@ async function uploadMediaToBlob(filePath, projectId, userId) {
 // uploadMediaToBlob(filePath, pId, "2");
 
 
-
-async function getSasUrls(projectId, userId, hashed) {
-    const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-    const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
-    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-    // Create a BlobServiceClient
-    const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
-    const blobServiceClient = new BlobServiceClient(`https://${accountName}.blob.core.windows.net`, sharedKeyCredential);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-
-    const sasUrls = [];
-
-     try {
-        // List blobs in the container
-        for await (const blob of containerClient.listBlobsFlat()) {
-            // Fetch blob client for each blob
-            const blobClient = containerClient.getBlobClient(blob.name);
-
-            // Check metadata for project ID
-            const blobProperties = await blobClient.getProperties();
-            const metadata = blobProperties.metadata;
-            console.log(metadata);
-
-
-            if (metadata.user_id && metadata.project_id && hashed && hashed === metadata.hashed && metadata.user_id === userId && metadata.project_id === projectId) {
-
-                const expiryDate = new Date(new Date().valueOf() + 3600 * 1000); // 1 hour expiry so sas urls should go to db and then to users within an hr
-               
-                // Generate the SAS token
-                const sasOptions = {
-                    expiresOn: expiryDate,
-                    permissions: 'r' 
-                };
-
-                const sasToken = generateBlobSASQueryParameters(sasOptions, sharedKeyCredential).toString();
-                const sasUrl = `${blobClient.url}?${sasToken}`;
-
-                sasUrls.push(sasUrl);
-            }
-         }
-
-         return sasUrls;
-
-    } catch (error) {
-        console.error("Error retrieving SAS URLs:", error);
-        throw error; 
-    }
-}
-
-// test
-// const projectId = "-1"; 
-// getSasUrls(projectId).then(sasUrls => {
-//     console.log("SAS URLs for project ID:", projectId);
-//     console.log(sasUrls);
-// }).catch(err => {
-//     console.error("Error:", err);
-// });
-
-//add sas url to db
-async function insertSasUrl(userId, projectId, sasUrl) {
-    try {
-      await mysql.connect(config);
-       console.log("Connected to the database!");
-
-      const query = `
-            INSERT INTO submissions (user_id, proj_id, url_of_submission) 
-            VALUES (@userId, @sasUrl, @projectId)`;
-
-        const values = {
-            userId: userId,
-            sasUrl: sasUrl,
-            projectId: parseInt(projectId)
-        };
-
-        const request = new mysql.Request();
-        request.input('user_id', mysql.NVarChar, userId);
-        request.input('projId', mysql.Int, parseInt(projectId));
-        request.input('url_of_submission', mysql.NVarChar, sasUrl);
-
-        await request.query(query);
-    
-    } catch (err) {
-      console.error("Error connecting to the database:", err);
-    } finally {
-   
-      await mysql.close();
-    }
-}
-
-//add all sas urls for a project into 
-// async function insertAllSasUrls(userId, projectId) {
-//     getSasUrls(projectId, userId)
-//         .then(sasUrls => {
-//             sasUrls.forEach(url => {
-//                 insertSasUrl(userId, projectId, url); // Process each SAS URL as needed
-//             });
-            
-//         })
-//         .catch(error => {
-//             console.error('Error retrieving SAS URLs:', error);
-//             req.end()
-//         });
-// }
-
-//FINAL METHOD TO SUBMIT PROOF
-async function submitProof(filePath, projectId, userId) {
-    uploadMediaToBlob(filePath, projectId, userId);
-    hashed = hash(filePath);
-    sasUrl = getSasUrls(projectId, userId, hashed);
-    insertSasUrl(userId, projectId, sasUrl);
-}
-
-
-async function getUserProjectImages(userId, projectId) {
+async function insertBlobMetadata(userId, projectId, blobName) {
     try {
         await mysql.connect(config);
-
-        // SQL query to retrieve URLs
         const query = `
-            SELECT url_of_submission
-            FROM submissions
-            WHERE user_id = @userId AND proj_id = @projectId
+            INSERT INTO submissions (user_name, proj_id, url_of_submission)
+            VALUES (@userId, @projectId, @blobName)
         `;
-
-        // Prepare and execute the query
         const request = new mysql.Request();
         request.input('userId', mysql.NVarChar, userId);
         request.input('projectId', mysql.Int, parseInt(projectId));
-        const result = await request.query(query);
-
-        const urls = result.recordset.map(row => row.url_of_submission);
-        return urls; // Return array of URLs
-        
+        request.input('blobName', mysql.NVarChar, blobName);
+        await request.query(query);
+        console.log("Metadata inserted successfully.");
     } catch (err) {
-        console.error("Error retrieving user project images:", err);
+        console.error("Error inserting blob metadata:", err);
+    } finally {
+        await mysql.close();
+    }
+}
+
+//test
+
+
+
+// //FINAL METHOD TO SUBMIT PROOF
+// async function submitProof(filePath, mimeType, projectId, username) {
+
+//     blobName = uploadMediaToBlob(filePath, mimeType, projectId, username);
+
+//     insertBlobMetadata(username, projectId, blobName.toString()) 
+// }
+async function submitProof(filePath, mimeType, projectId, username) {
+    try {
+        const blobName = await uploadMediaToBlob(filePath, mimeType, projectId, username);
+        await insertBlobMetadata(username, projectId, blobName.toString());
+        console.log('Proof submitted successfully.');
+    } catch (error) {
+        console.error('Error in submitProof:', error.message);
+        throw error;
+    }
+}
+
+module.exports = { submitProof, generateSasUrls};
+
+//test
+// const filePath = "assets\\images\\flowers.jpeg";
+// const pId = "1";
+// submitProof(filePath, pId, "T");
+
+
+async function generateSasUrls(username, projectId) {
+    try {
+        await mysql.connect(config);
+        const query = `
+            SELECT blob_name
+            FROM submissions
+            WHERE user_name = @username AND proj_id = @projectId
+        `;
+        const request = new mysql.Request();
+        request.input("username", mysql.NVarChar, username);
+        request.input("projectId", mysql.Int, parseInt(projectId));
+
+        const result = await request.query(query);
+        const blobNames = result.recordset.map(row => row.blob_name);
+
+        const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const sasUrls = [];
+
+        for (const blobName of blobNames) {
+            const blobClient = containerClient.getBlobClient(blobName);
+
+            const expiryDate = new Date(new Date().valueOf() + 3600 * 1000); // 1 hour expiry
+            const sasToken = generateBlobSASQueryParameters({
+                containerName,
+                blobName,
+                expiresOn: expiryDate,
+                permissions: "r",
+            }, sharedKeyCredential).toString();
+
+            sasUrls.push({
+                blobName,
+                sasUrl: `${blobClient.url}?${sasToken}`,
+            });
+        }
+
+        return sasUrls;
+    } catch (err) {
+        console.error("Error generating SAS URLs:", err);
         throw err;
     } finally {
         await mysql.close();
     }
 }
 
-async function getMediaFiles(userId, projectId) {
-    try {
-        // Get fresh SAS URLs for the files
-        const freshUrls = await getUserProjectImages(userId, projectId);
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads"); // Folder to save uploaded files
+    },
+    filename: (req, file, cb) => {
+        // Use only the original extension, not the original filename
+        const extension = path.extname(file.originalname);  // Get the extension (e.g., ".jpeg")
+        const timestamp = Date.now();  // Add a timestamp to avoid filename conflicts
 
-        // Fetch each file using its SAS URL
-        const filePromises = freshUrls.map(async (url) => {
-            const response = await axios.get(url, { responseType: 'arraybuffer' });
-            return {
-                fileName: extractFileName(url), // Extract file name from URL for reference
-                data: response.data // Binary data of the file
-            };
-        });
+        // Generate a new filename using the timestamp and the original extension
+        cb(null, `${timestamp}${extension}`);  // Filename will be like "1679900000000.jpeg"
+    },
+});
 
-        const files = await Promise.all(filePromises);
-        return files;
-
-    } catch (error) {
-        console.error("Error fetching media files:", error);
-        throw error;
-    }
-}
-
-function extractFileName(url) {
-    const parts = url.split("/");
-    return parts[parts.length - 1].split("?")[0];
-}
+const upload = multer({ storage: storage });
 
 
 
 
-
-
-
-
-
-// testing
-// getSasUrls(projectId)
-//     .then(sasUrls => {
-//         sasUrls.forEach(url => {
-//             insertSasUrl("-1", url); // Process each SAS URL as needed
-//         });
-        
-//     })
-//     .catch(error => {
-//         console.error('Error retrieving SAS URLs:', error);
-//         req.end()
-//     });
