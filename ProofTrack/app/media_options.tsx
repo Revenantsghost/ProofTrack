@@ -4,7 +4,7 @@ import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 
 import { getServer } from './constants'
-import ImageViewer from '@/components/ImageViewer';
+import ImageViewer from './components/ImageViewer';
 
 const SERVER: string = getServer();
 
@@ -143,13 +143,13 @@ async function submitProof(username: string, projID: string, imageData: string):
 
     // Extract the file name from the URI (assuming the image has a file extension)
     const filename = imageData.split('/').pop(); // Get the file name from the URI
-    
+
     // Append the image with the correct file name
     formData.append('file', blob, filename);
     formData.append('mediaType', blob.type);
     formData.append('username', username);
     formData.append('projID', projID);
-    
+
     const serverResponse = await fetch(`${SERVER}/${route}`, {
       method: 'POST',
       body: formData,
@@ -221,14 +221,14 @@ async function submitProof(username: string, projID: string, imageData: string):
 //         allowsEditing: true,
 //         quality: 1,
 //       });
-    
+
 //       if (!result.canceled) {
 //         setSelectedImage(result.assets[0].uri);
 //       } else {
 //         alert('You did not select any image.');
 //       }
 //     };
-      
+
 //     const takePictureAsync = async () => {
 //       const result = await ImagePicker.launchCameraAsync({
 //         allowsEditing: true,
@@ -249,7 +249,7 @@ async function submitProof(username: string, projID: string, imageData: string):
 //         const project_id_number: string = projID;
 //         const user_name: string = username;
 //         const image_as_string: string = selectedImage;
-            
+
 //         /*** This is where to include the image-sending logic. ***/
 
 //         Alert.alert("Success", "Photo submitted successfully!");
@@ -280,7 +280,7 @@ async function submitProof(username: string, projID: string, imageData: string):
 //       </View>
 //     );
 // }
-  
+
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,

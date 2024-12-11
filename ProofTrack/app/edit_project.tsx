@@ -44,35 +44,37 @@ export default function EditProject() {
           const infoResponse = await fetch(`${SERVER}/fetchProject?user_name=${projInfo.username}&proj_id=${projInfo.projID}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
-            })
-            /* Error checking. */
-            if (!infoResponse.ok) {
-              console.log(`Info Response Not Okay. Status: ${infoResponse.status}`);
-              throw new Error('Failed to fetch project data');
-            }
-            const data = await infoResponse.json(); // Processs response into JSON.
-            const fetchedProject: Project = {
-              username: projInfo.username,
-              name: data.project_name,
-              projID: data.proj_id,
-              notificationFrequency: data.checkpointFrequency,
-              duration: data.duration,
-              images: [], // Placeholder, images will be fetched separately.
-            };
-            setProject(fetchedProject); // Set program variables.
+          })
+          /* Error checking. */
+          if (!infoResponse.ok) {
+            console.log(`Info Response Not Okay. Status: ${infoResponse.status}`);
+            throw new Error('Failed to fetch project data');
+          }
+          const data = await infoResponse.json(); // Processs response into JSON.
+          const fetchedProject: Project = {
+            username: projInfo.username,
+            name: data.project_name,
+            projID: data.proj_id,
+            notificationFrequency: data.checkpointFrequency,
+            duration: data.duration,
+            images: [], // Placeholder, images will be fetched separately.
+          };
+          setProject(fetchedProject); // Set program variables.
         }
         catch(error){
           console.error('Error fetching project info:', error);
         }
       }
 
-      // Fetch images for the project.
-        const fetchImages = async () => {
+      /* Utilize async/await to anticipate fetch. */
+      const fetchImages = async () => {
         try{
+          /* Fetch project details, provide endpoint params using projInfo. */
           const imageResponse = await fetch(`${SERVER}/media/${projInfo.username}/${projInfo.projID}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           })
+          /* Error checking. */
           if (!imageResponse.ok) {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
@@ -82,21 +84,22 @@ export default function EditProject() {
             const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
               `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
             );
-            console.log(fetchImages);
+            console.log(fetchedImages);
             setImages(fetchedImages);
           }
         }
-      catch(error) {
-        console.error('Error fetching media files:', error);
+        catch(error) {
+          console.error('Error fetching media files:', error);
+        }
       }
-    }
 
+      /* Call async functions */
       fetchInfo();
       fetchImages();
     }
   }, [projInfo]);
 
-//Display loading message as project info is fetched
+  //Display loading message as project info is fetched
   if (!project) {
     return (
       <View style={styles.container}>
@@ -105,6 +108,7 @@ export default function EditProject() {
     );
   }
 
+  //Page visual structure
   return (
     <View style={styles.container}>
       {/* Project Name */}
