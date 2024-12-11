@@ -56,15 +56,8 @@ export default function Index() {
           {
             text: 'OK',
             onPress: () => {
-              // Clear form fields
-              setProjectName('');
-              setNotificationFrequency('Select');
-              setReminderDays([]);
-              setStartDate(null);
-              setEndDate(null);
-              setHasEndDate(true);
-              /* Send the user back to the homepage.
-               * This forces the pages to re-mount. */
+              /* Send the user to a redirect back to home.
+               * This is a janky way to force the pages to re-mount. */
               router.replace(`../tabs_redirect?username=${username}`);
             },
           },
