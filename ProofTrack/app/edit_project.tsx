@@ -78,10 +78,12 @@ export default function EditProject() {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }
+          else {
+            console.log('response ok');
+          }
 
           // Retrieve the response as a buffer.
           const buffer = await imageResponse.arrayBuffer();
-          //const contentType = imageResponse.headers.get('Content-Type');
 
           // Create a Blob from the buffer and generate a URL.
           const blob = new Blob([buffer]);
@@ -134,7 +136,7 @@ export default function EditProject() {
       {/* Project Images */}
       <Text style={styles.sectionTitle}>Images</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
-        {project.images.map((imageUrl, index) => (
+        {images.map((imageUrl, index) => (
           <Image key={index} source={{ uri: imageUrl }} style={styles.image} />
         ))}
       </ScrollView>
