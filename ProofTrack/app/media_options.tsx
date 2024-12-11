@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Alert, Button } from 'react-native';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 
 import { getServer } from './constants'
@@ -85,12 +84,6 @@ export default function MediaOptions() {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.imageContainer}>
-        <Image
-          source={selectedImage ? { uri: selectedImage } : PlaceholderImage}
-          style={styles.image}
-        />
-      </View> */}
       <View style={styles.imageContainer}>
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         </View>
