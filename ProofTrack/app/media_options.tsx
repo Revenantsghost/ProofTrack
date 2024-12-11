@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 
 import { getServer } from './constants'
+import ImageViewer from '@/components/ImageViewer';
 
 const SERVER: string = getServer();
 
@@ -42,6 +43,18 @@ export default function MediaOptions() {
   };
 
   const takePictureAsync = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+    /* Handles permission being denied.
+     * Handles the case where the app can and cannot ask for permission again. */
+    if (!permission.granted && !permission.canAskAgain) {
+      alert('We don\'t have access to your camera.\nPlease re-enable it in your settings.');
+      return;
+    } else if (!permission.granted) {
+      alert('We don\'t have access to your camera.');
+      return;
+    }
+
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
@@ -72,12 +85,15 @@ export default function MediaOptions() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
+      {/* <View style={styles.imageContainer}>
         <Image
           source={selectedImage ? { uri: selectedImage } : PlaceholderImage}
           style={styles.image}
         />
-      </View>
+      </View> */}
+      <View style={styles.imageContainer}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+        </View>
       <View style={styles.footerContainer}>
         <View style={{ bottom: 110, position: "absolute" }}>
           <Button title="Choose a photo" onPress={pickImageAsync} />
@@ -141,8 +157,7 @@ async function submitProof(username: string, projID: string, imageData: string):
     formData.append('username', username);
     formData.append('projID', projID);
     
-    const test_server = 'http://localhost:3000'
-    const serverResponse = await fetch(`${test_server}/${route}`, {
+    const serverResponse = await fetch(`${SERVER}/${route}`, {
       method: 'POST',
       body: formData,
     });
