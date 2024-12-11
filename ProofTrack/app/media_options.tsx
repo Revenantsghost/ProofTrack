@@ -3,7 +3,6 @@ import { View, StyleSheet, Alert, Button } from 'react-native';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useCameraPermissions } from 'expo-camera';
 
 import { getServer } from './constants'
 import ImageViewer from '@/components/ImageViewer';
@@ -29,7 +28,6 @@ export default function MediaOptions() {
   }
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-  const [permission, requestPermission] = useCameraPermissions();
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -45,14 +43,18 @@ export default function MediaOptions() {
   };
 
   const takePictureAsync = async () => {
-    if (!permission) {
-      requestPermission();
-      /* This second if-statement means permission was denied! */
-      if (!permission) {
-        alert('You did not grant camera permission.');
-        return;
-      }
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+    /* Handles permission being denied.
+     * Handles the case where the app can and cannot ask for permission again. */
+    if (!permission.granted && !permission.canAskAgain) {
+      alert('We don\'t have access to your camera.\nPlease re-enable it in your settings.');
+      return;
+    } else if (!permission.granted) {
+      alert('We don\'t have access to your camera.');
+      return;
     }
+
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
