@@ -43,7 +43,6 @@ jobs:
       - name: Start backend server
         run: |
           cd back-end
-          pm2 list
           pm2 start index.js
           pwd
           pm2 save
