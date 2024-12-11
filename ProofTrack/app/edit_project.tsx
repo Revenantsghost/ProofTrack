@@ -72,21 +72,26 @@ export default function EditProject() {
           /* Fetch project details, provide endpoint params using projInfo. */
           const imageResponse = await fetch(`${SERVER}/media/${projInfo.username}/${projInfo.projID}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
           })
           /* Error checking. */
           if (!imageResponse.ok) {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }
-          const data = await imageResponse.json();
-          if (data.success) {
-            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
-              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
-            );
-            console.log(fetchedImages);
-            setImages(fetchedImages);
-          }
+
+          // Retrieve the response as a buffer.
+          const buffer = await imageResponse.arrayBuffer();
+          //const contentType = imageResponse.headers.get('Content-Type');
+
+          // Create a Blob from the buffer and generate a URL.
+          const blob = new Blob([buffer]);
+          const imgURL = URL.createObjectURL(blob);
+
+          // Displaying the image URL (if applicable).
+          console.log(`Generated Image URL: ${imgURL}`);
+
+          // Set the image directly for display.
+          setImages([imgURL]);
         }
         catch(error) {
           console.error('Error fetching media files:', error);
