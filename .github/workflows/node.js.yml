@@ -42,6 +42,7 @@ jobs:
       - name: Start backend server
         run: |
           cd back-end
+          pm2 list
           pm2 kill
           pm2 start index.js
           pm2 save
