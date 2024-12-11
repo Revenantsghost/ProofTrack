@@ -3,6 +3,7 @@ import { View, StyleSheet, Alert, Button } from 'react-native';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { useCameraPermissions } from 'expo-camera';
 
 import { getServer } from './constants'
 import ImageViewer from '@/components/ImageViewer';
@@ -28,6 +29,7 @@ export default function MediaOptions() {
   }
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [permission, requestPermission] = useCameraPermissions();
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -43,6 +45,14 @@ export default function MediaOptions() {
   };
 
   const takePictureAsync = async () => {
+    if (!permission) {
+      requestPermission();
+      /* This second if-statement means permission was denied! */
+      if (!permission) {
+        alert('You did not grant camera permission.');
+        return;
+      }
+    }
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
@@ -145,8 +155,7 @@ async function submitProof(username: string, projID: string, imageData: string):
     formData.append('username', username);
     formData.append('projID', projID);
     
-    const test_server = 'http://localhost:3000'
-    const serverResponse = await fetch(`${test_server}/${route}`, {
+    const serverResponse = await fetch(`${SERVER}/${route}`, {
       method: 'POST',
       body: formData,
     });
