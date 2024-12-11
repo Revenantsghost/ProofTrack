@@ -55,6 +55,7 @@ jobs:
           cd back-end
           npm install jest --save-dev
           npm i supertest
+          npm i pm2
           npm ci
       - name: Test backend
         run: |
@@ -63,4 +64,6 @@ jobs:
       - name: Start backend server
         run: |
           cd back-end
-          node index.js
+          pm2 kill
+          pm2 start index.js
+          pm2 save
