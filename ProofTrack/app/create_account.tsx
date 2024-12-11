@@ -92,9 +92,8 @@ async function handleCreation(username: string, password: string, passwordConfir
   if (sendAttempt) {
     /* A friendly welcome message! */
     Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-    /* Since this is a new account, numProjects will be zero.
-     * This takes the user to the homepage. */
-    router.replace(`./(tabs)/?username=${username}&numProjects=0`);
+    /* This takes the new user to the homepage. */
+    router.replace(`./(tabs)/?username=${username}`);
   }
 }
 

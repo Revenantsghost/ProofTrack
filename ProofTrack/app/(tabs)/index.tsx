@@ -3,17 +3,17 @@ import React, { useContext } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { UserContext } from './_layout';
-import { User } from '../types';
 
 export default function Index() {
-  const user: User = useContext(UserContext);
+  /* Grab the user's username. */
+  const username: string = useContext(UserContext);
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome to ProofTrack, {user.username}!</Text>
+      <Text style={styles.welcomeText}>Welcome to ProofTrack, {username}!</Text>
 
       <TouchableOpacity
         style={styles.roundButton}
-        onPress={() => {router.navigate(`../submit_proof?username=${user.username}`)}}
+        onPress={() => {router.navigate(`../submit_proof?username=${username}`)}}
       >
         <Ionicons name="camera" size={48} color="white" />
       </TouchableOpacity>

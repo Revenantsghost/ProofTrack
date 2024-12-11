@@ -1,19 +1,40 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { UserContext } from './_layout';
-import { User } from '../types';
+import { getServer } from '../constants';
+
+const SERVER: string = getServer();
 
 /* UI for user's profile page.
  * Displays their username and allows them to change username or password.
  * Also displays some stats, such as number of projects in progress. */
 export default function Profile() {
-  // Grab the current user's information.
-  const user: User = useContext(UserContext);
-  const username: string = user.username;
-  // Convert their username into its possessive form.
-  const theirs: string = appendApostrophe(user.username);
+  /* Grab the user's username. */
+  const username: string = useContext(UserContext);
+  /* And then convert it into its possessive form. */
+  const theirs: string = appendApostrophe(username);
+  /* User's number of projects. */
+  const [numProjects, setNumProjects] = useState('Loading...');
+
+
+  const populateNumProjects = async () => {
+    /* Called method handles case of internal errors. */
+    const num_projects: number | undefined = await fetchNumProjects(username);
+    if (num_projects !== undefined) {
+      setNumProjects(`${num_projects}`);
+    }
+  }
+
+  /* Fetch user's number of projects when the component mounts. */
+  /*
+  useEffect(() => {
+    populateNumProjects();
+  }, []); */
+  /* I will also try without using useEffect. */
+  populateNumProjects();
+
   return (
     <View>
       { /* Positioning for profile icon. */}
@@ -40,7 +61,7 @@ export default function Profile() {
       { /* Row displaying user's number of projects. */ }
       <View style={{ top: 180 }}>
         <Text style={styles.leftText}>Projects</Text>
-        <Text style={styles.rightText}>{user.numProjects}</Text>
+        <Text style={styles.rightText}>{numProjects}</Text>
       </View>
       <View style={{ top: 310 }}>
         <TouchableOpacity
@@ -63,6 +84,37 @@ function appendApostrophe(name: string): string {
     return name + "'";
   } else {
     return name + "'s";
+  }
+}
+
+/* Fetches the user's number of projects.
+ * Returns a number on success. 
+ * Returns undefined (and throws an error) if internal error encountered. */
+async function fetchNumProjects(user_name: string): Promise<number | undefined> {
+  const route: string = 'fetchProfile';
+  try {
+    const response: Response = await fetch(`${SERVER}/${route}?user_name=${user_name}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Internal error');
+    }
+    const jsonData: any = await response.json();
+    const num_projects: number = jsonData.num_of_projects;
+    if (num_projects === undefined) {
+      /* This means the JSON didn't have the expected field!
+       * Internal error, so throw an error. */
+      throw new Error('Parsing error');
+    }
+    console.log("Parsing user's num_of_projects attempt OK.");
+    return num_projects;
+  } catch (error) {
+    console.error('Internal error encountered:', error);
+    Alert.alert('Internal error encountered.', 'Couldn\'t fetch your number of projects.');
+    return undefined;
   }
 }
 

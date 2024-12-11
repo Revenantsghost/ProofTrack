@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { StyleSheet, Alert, Button } from 'react-native';
-import { User } from './types'
 import { getServer } from './constants'
 
 const SERVER: string = getServer();
@@ -49,13 +48,12 @@ export default function Login() {
   );
 };
 
-/* Handles a new user's attempt to create an account.
- * If successful, creates information on new user and sends them to main app.
- * If unsuccessful, alerts the User of the problem and benignly returns.
+/* Handles a user's attempt to log in.
+ * If successful, sends the user to the home page.
+ * If unsuccessful, alerts the user of the problem and benignly returns.
  * Unsuccessful if:
- * * Username already taken.
- * * Not all fields entered.
- * * Passwords don't match. */
+ * * Invalid username or password.
+ * * Not all fields entered. */
 async function handleLogin(username: string, password: string) {
   if (!username) {
     /* Make sure user entered their username. */
@@ -69,19 +67,19 @@ async function handleLogin(username: string, password: string) {
 
   /* Attempt to get a record type pertaining to this user.
    * Handles the case of invalid username/password. */
-  const user: User | undefined = await attemptLogin(username, password);
-  if (user !== undefined) {
+  const loginAttempt: boolean = await attemptLogin(username, password);
+  if (loginAttempt) {
     /* A friendly welcome message! */
-    Alert.alert('Login Successful', `Welcome back, ${user.username}!`);
-    router.replace(`./(tabs)/?username=${user.username}&numProjects=${user.numProjects}`);
+    Alert.alert('Login Successful', `Welcome back, ${username}!`);
+    router.replace(`./(tabs)/?username=${username}`);
   }
 }
 
 /* Attempts to log the user in.
- * Upon success, constructs a User record type and returns it.
- * If user inputs invalid username/password, returns undefined.
- * Throws an error (and then returns undefined) if server error encountered. */
-async function attemptLogin(username: string, password: string): Promise<User | undefined> {
+ * Returns true upon success.
+ * If user inputs invalid username/password, returns false.
+ * Throws an error (and then returns false) if server error encountered. */
+async function attemptLogin(username: string, password: string): Promise<boolean> {
   const route: string = 'login';
   try {
     const response: Response = await fetch(`${SERVER}/${route}`, {
@@ -97,32 +95,23 @@ async function attemptLogin(username: string, password: string): Promise<User | 
     const invalid_login_status: number = 404;
     if (response.status == invalid_login_status) {
       /* Invalid username/password status.
-       * Not an error, but still return undefined. */
+       * Not an error, but still return false. */
       Alert.alert('Login failed.', 'Invalid username or password.');
-      return undefined;
+      return false;
     } else if (!response.ok) {
       /* Server error!
        * Throw the error and let the catch block handle it. */
       throw new Error('Server error');
+    } else {
+      console.log("Login OK.");
     }
-    console.log("Login attempt OK.");
-    const jsonData: any = await response.json();
-    console.log(`User's JSON data: ${JSON.stringify(jsonData)}`);
-    const num_projects: number = jsonData.num_of_projects;
-    if (num_projects === undefined) {
-      /* This means the JSON didn't have the expected field!
-       * Internal error, so throw an error. */
-      throw new Error('Parsing error');
-    }
-    console.log("Parsing user attempt OK.");
-    const user: User = { username: username, numProjects: num_projects }
-    return user;
   } catch (error) {
-    /* Log the error and THEN return undefined. */
+    /* Log the error and THEN return false. */
     console.error('Internal error encountered:', error);
     Alert.alert('Internal error encountered.', 'Please try again later.');
-    return undefined;
+    return false;
   }
+  return true;
 }
 
 const styles = StyleSheet.create({

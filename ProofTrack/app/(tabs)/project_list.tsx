@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import ListOfProjects from '../components/list_of_projects';
 import { UserContext } from './_layout';
 import { router } from 'expo-router';
-import { User } from '../types';
 
 /**
  * Renders an individual item row in the list.
@@ -12,7 +11,7 @@ import { User } from '../types';
  */
 export default function ProjectList() {
   /* Use hook to get username. */
-  const user: User = useContext(UserContext);
+  const username: string = useContext(UserContext);
 
   /**
    * Renders an individual item row in the list.
@@ -22,13 +21,13 @@ export default function ProjectList() {
    */
   const goToEditProject = (projID: string) => {
     console.log(`Going to edit project number: ${projID}`);
-    router.navigate(`../edit_project?userID=${user.username}&projID=${projID}`);
+    router.navigate(`../edit_project?userID=${username}&projID=${projID}`);
   }
 
   return (
     /* Call component for project list */
     <ListOfProjects
-      username={user.username}
+      username={username}
       handleProjectPress={(projID: string) => {goToEditProject(projID)}}
     />
   );

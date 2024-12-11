@@ -1,15 +1,15 @@
 import React, { useContext, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView, Modal, FlatList, Alert } from 'react-native';
 import { UserContext } from './_layout';
-import { User } from '../types';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
+import { router } from 'expo-router';
 import { getServer } from '../constants';
 
 const SERVER: string = getServer();
 
 export default function Index() {
-  const user: User = useContext(UserContext);
+  const username: string = useContext(UserContext);
   const [projectName, setProjectName] = useState('');
   const [notificationFrequency, setNotificationFrequency] = useState('Select'); // initial state of the notification frequency
   const [isModalVisible, setModalVisible] = useState(false); // Controls the visibility of the modal
@@ -27,7 +27,7 @@ export default function Index() {
     }
     const projectData = {
       proj_name: projectName,
-      user_name: user.username,
+      user_name: username,
       checkpointFrequency: notificationFrequency,
       duration: endDate ? `From ${startDate} to ${endDate}` : 'Indefinite',
       // reminderDays,
@@ -56,13 +56,9 @@ export default function Index() {
           {
             text: 'OK',
             onPress: () => {
-              // Clear form fields
-              setProjectName('');
-              setNotificationFrequency('Select');
-              setReminderDays([]);
-              setStartDate(null);
-              setEndDate(null);
-              setHasEndDate(true);
+              /* Send the user to a redirect back to home.
+               * This is a janky way to force the pages to re-mount. */
+              router.replace(`../tabs_redirect?username=${username}`);
             },
           },
         ]);
