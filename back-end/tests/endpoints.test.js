@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../index.js');
+const { app, server } = require('../index.js');
 
 
 describe('API Endpoints', () => {
@@ -99,4 +99,9 @@ describe('API Endpoints', () => {
             .send({"user_name": user_name});
         expect(response.status).toBe(200);
     });
+});
+
+afterAll(() => {
+    // Close the server after tests
+    server.close();
 });

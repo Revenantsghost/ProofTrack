@@ -41,7 +41,9 @@ const storage = multer.diskStorage({
 app.post('/submit-proof', upload.single('file'), async (req, res) => {
     const { mediaType, projID, username } = req.body;
     const file = req.file; // Multer automatically adds the file to `req.file`
-
+    console.log(req.file)
+    console.log(req.body)
+    
     const missingFields = [];
     if (!file) {
         missingFields.push('file');
@@ -75,25 +77,6 @@ app.post('/submit-proof', upload.single('file'), async (req, res) => {
         res.status(500).send({ message: 'Internal server error.' });
     }
 });
-// app.post("/submit-proof", upload.single("file"), async (req, res) => {
-//     const filePath = req.file.path;  
-//     const projectId = req.body.projectId;
-//     const username = req.body.username;
-
-//     if (!filePath || !projectId || !username) {
-//         return res.status(400).send({ message: "file, projectId, and username are required." });
-//     }
-
-//     try {
-//         console.log("File path:", filePath);  // Debugging log
-//         await submitProof(filePath, projectId, username);
-//         fs.unlinkSync(filePath);  // Delete temporary file
-//         res.status(200).send({ message: "Proof submitted successfully." });
-//     } catch (error) {
-//         console.error("Error submitting proof:", error);
-//         res.status(500).send({ message: "An error occurred while submitting proof." });
-//     }
-// });
 
 
 /**
@@ -396,7 +379,7 @@ app.delete('/hardDELETEUSER', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
+server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`!!Server is running on http://localhost:${PORT}`);
 });
 
@@ -413,4 +396,4 @@ process.on('SIGINT', async () => {
 
 
 
-module.exports = app;
+module.exports = { app, server };
