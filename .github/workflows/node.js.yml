@@ -6,6 +6,7 @@ on:
     branches: [ "main" ]
 
 jobs:
+: '
   build_frontend:
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +28,7 @@ jobs:
         run: |
           cd ProofTrack
           npm test
-          
+'
   build_backend:
     runs-on: self-hosted
     steps:
