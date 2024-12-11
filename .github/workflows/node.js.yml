@@ -38,6 +38,7 @@ jobs:
       - name: Test backend
         run: |
           cd back-end
+          pm2 kill 1
           npm test
       - name: Start backend server
         run: |
