@@ -39,6 +39,7 @@ jobs:
           cache: 'npm'
       - name: 'Create env file'
         run: |
+          cd back-end
           touch .env
           echo AZURE_SQL_SERVER=prooftrack.database.windows.net >> .env
           echo AZURE_SQL_DATABASE=ProofTrack >> .env
