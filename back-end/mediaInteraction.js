@@ -115,7 +115,7 @@ async function insertBlobMetadata(userId, projectId, blobName) {
     } catch (err) {
         console.error("Error inserting blob metadata:", err);
     } finally {
-        await mysql.close();
+        //await mysql.close();
     }
 }
 
@@ -254,6 +254,7 @@ async function fetchBlobNameFromDB(username, projID) {
         const result = await request.query(query);
         
         if (result.recordset.length === 0) {
+            console.error("No media files found for the given user and project.")
             throw new Error("No media files found for the given user and project.");
         }
 
@@ -264,7 +265,7 @@ async function fetchBlobNameFromDB(username, projID) {
         console.error("Error querying database:", error);
         throw new Error("Failed to retrieve blob name from database.");
     } finally {
-        await mysql.close();
+        //await mysql.close();
     }
 }
 
