@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 
@@ -28,7 +27,8 @@ const storage = multer.diskStorage({
   });
  const upload = multer({ dest: "uploads/", storage: storage }); // temp upload location
 
- const { submitProof } = require("./mediaInteraction.js");
+ const { submitProof, getMediaDetails } = require("./mediaInteraction.js");
+
 
   
 //TESTING ONLY
@@ -41,9 +41,7 @@ const storage = multer.diskStorage({
 app.post('/submit-proof', upload.single('file'), async (req, res) => {
     const { mediaType, projID, username } = req.body;
     const file = req.file; // Multer automatically adds the file to `req.file`
-    console.log(req.file)
-    console.log(req.body)
-    
+
     const missingFields = [];
     if (!file) {
         missingFields.push('file');
@@ -77,29 +75,76 @@ app.post('/submit-proof', upload.single('file'), async (req, res) => {
         res.status(500).send({ message: 'Internal server error.' });
     }
 });
+// app.post("/submit-proof", upload.single("file"), async (req, res) => {
+//     const filePath = req.file.path;  
+//     const projectId = req.body.projectId;
+//     const username = req.body.username;
+
+//     if (!filePath || !projectId || !username) {
+//         return res.status(400).send({ message: "file, projectId, and username are required." });
+//     }
+
+//     try {
+//         console.log("File path:", filePath);  // Debugging log
+//         await submitProof(filePath, projectId, username);
+//         fs.unlinkSync(filePath);  // Delete temporary file
+//         res.status(200).send({ message: "Proof submitted successfully." });
+//     } catch (error) {
+//         console.error("Error submitting proof:", error);
+//         res.status(500).send({ message: "An error occurred while submitting proof." });
+//     }
+// });
 
 
 /**
  * Endpoint to retrieve all media files for a specific project and user
  */
-app.get('/media/:userId/:projectId', async (req, res) => {
-    const { userId, projectId } = req.params;
+// app.get('/media/:username/:projID', async (req, res) => {
+//     const { username, projID } = req.params;
+//     try {
+//         // Retrieve media details (content type, buffer, and file URL)
+//         const { contentType, buffer, fileUrl } = await getMediaDetails(username, projID);
 
+//         // Set the appropriate response headers
+//         res.setHeader("Content-Type", contentType);
+//         res.setHeader("Content-Disposition", `inline; filename="${fileUrl}"`);
+
+//         // Send the media buffer as the response
+//         res.send(buffer);
+//     } catch (error) {
+//         console.error("Error processing media request:", error.message);
+//         res.status(500).json({
+//             success: false,
+//             message: error.message,
+//         });
+//     }
+// });
+
+app.get('/media/:username/:projID', async (req, res) => {
+    const { username, projID } = req.params;
     try {
-        // Retrieve the media files
-        const mediaFiles = await getMediaFiles(userId, projectId);
+        // Retrieve media details (URL with SAS token)
+        const { success, mediaUrl, contentType, message } = await getMediaDetails(username, projID);
 
-        res.status(200).json({
+        if (!success) {
+            return res.status(404).json({
+                success: false,
+                message: message || "Media not found.",
+            });
+        }
+
+        // Return the media URL with SAS token for frontend use
+        res.json({
             success: true,
-            message: "Media files retrieved successfully",
-            files: mediaFiles.map(file => ({
-                fileName: file.fileName,
-                fileData: file.data.toString('base64') // Convert binary data to base64 for JSON transport
-            }))
+            mediaUrl,
+            contentType,
         });
     } catch (error) {
-        console.error("Error retrieving media files:", error);
-        res.status(500).json({ success: false, message: "Failed to retrieve media files" });
+        console.error("Error processing media request:", error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 });
 
@@ -379,7 +424,7 @@ app.delete('/hardDELETEUSER', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`!!Server is running on http://localhost:${PORT}`);
 });
 
@@ -396,4 +441,4 @@ process.on('SIGINT', async () => {
 
 
 
-module.exports = { app, server };
+module.exports = app;

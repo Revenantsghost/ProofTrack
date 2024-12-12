@@ -65,8 +65,6 @@ export default function EditProject() {
           console.error('Error fetching project info:', error);
         }
       }
-
-      /* Utilize async/await to anticipate fetch. */
       const fetchImages = async () => {
         try{
           /* Fetch project details, provide endpoint params using projInfo. */
@@ -79,13 +77,23 @@ export default function EditProject() {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }
+          else {
+            console.log('Response Ok');
+          }
+
+          // Retrieve the response as a buffer.
           const data = await imageResponse.json();
-          if (data.success) {
-            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
-              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
-            );
-            console.log(fetchedImages);
-            setImages(fetchedImages);
+
+          // Validate response success.
+          if (data.success && data.mediaUrl) {
+            const imgURL = data.mediaUrl;
+            console.log(`Media URL: ${imgURL}`);
+
+            // Set the image URL for display.
+            setImages([imgURL]);
+          }
+          else {
+            throw new Error('Invalid response structure or missing media URL');
           }
         }
         catch(error) {

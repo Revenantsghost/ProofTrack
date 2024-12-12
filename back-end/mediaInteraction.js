@@ -6,8 +6,12 @@ const mysql = require('mssql');
 const multer = require("multer");
 const path = require("path");
 
+
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+const ACCOUNTNAME = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 
 
 
@@ -24,13 +28,14 @@ const config = {
 };
 
 async function uploadMediaToBlob(filePath, mimeType, projectId, username) {
-    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+
     const containerClient = blobServiceClient.getContainerClient(containerName);
     const extension = mimeType.split('/')[1]; // Extract extension from mimeType
     const blobName = `${projectId}/${username}/${Date.now()}.${extension}`;
     const blobClient = containerClient.getBlockBlobClient(blobName);
 
     const metadata = { project_id: projectId, user_name: username };
+    console.log(metadata);
 
     try {
         const buffer = fs.readFileSync(filePath);
@@ -136,7 +141,7 @@ async function submitProof(filePath, mimeType, projectId, username) {
     }
 }
 
-module.exports = { submitProof, generateSasUrls};
+module.exports = { submitProof, getMediaDetails};
 
 //test
 // const filePath = "assets\\images\\flowers.jpeg";
@@ -159,7 +164,7 @@ async function generateSasUrls(username, projectId) {
         const result = await request.query(query);
         const blobNames = result.recordset.map(row => row.blob_name);
 
-        const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+        
         const containerClient = blobServiceClient.getContainerClient(containerName);
         const sasUrls = [];
 
@@ -188,6 +193,163 @@ async function generateSasUrls(username, projectId) {
         await mysql.close();
     }
 }
+
+
+
+// Create a blob service client using your connection string
+//const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+
+// Function to generate a SAS token for a specific blob
+async function generateBlobSasToken(containerName, blobName) {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+
+    // Set the permissions for the SAS token (read permission in this case)
+    const blobClient = containerClient.getBlobClient(blobName);
+
+    // Create the SAS token for the blob
+    const expiresOn = new Date();
+    expiresOn.setMinutes(expiresOn.getMinutes() + 60); // Set expiration time (1 hour in this example)
+
+    const sasToken = blobClient.generateSasUrl({
+        expiresOn,
+        permissions: "r",  // 'r' = read permission
+    });
+
+    return sasToken;
+}
+
+async function getBlobStream(username, projID, fileUrl) {
+    try {
+       
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const blobName = `${projID}/${username}/${fileUrl}`;
+        console.log("Blob Name:", blobName);
+        
+        const blobClient = containerClient.getBlobClient(blobName);
+        const downloadResponse = await blobClient.download();
+        
+        // Return the content type and stream
+        return {
+            contentType: downloadResponse.contentType || 'application/octet-stream',
+            readableStream: downloadResponse.readableStreamBody,
+        };
+    } catch (error) {
+        console.error(`Error retrieving blob ${fileUrl}:`, error);
+        throw new Error("Failed to retrieve blob");
+    }
+}
+
+async function fetchBlobNameFromDB(username, projID) {
+    try {
+        await mysql.connect(config);
+        const query = `
+            SELECT url_of_submission
+            FROM submissions
+            WHERE user_name = @username AND proj_id = @projID
+        `;
+        const request = new mysql.Request();
+        request.input("username", mysql.NVarChar, username);
+        request.input("projID", mysql.Int, parseInt(projID));
+
+        const result = await request.query(query);
+        
+        if (result.recordset.length === 0) {
+            throw new Error("No media files found for the given user and project.");
+        }
+
+        // Return just the file URL
+        const urlOfSubmission = result.recordset[0].url_of_submission;
+        return urlOfSubmission.split('/').pop().replace(/\\/g, '/');
+    } catch (error) {
+        console.error("Error querying database:", error);
+        throw new Error("Failed to retrieve blob name from database.");
+    } finally {
+        await mysql.close();
+    }
+}
+
+
+// async function getMediaDetails(username, projID) {
+//     try {
+//         // Fetch the blob name from the database
+//         const fileUrl = await fetchBlobNameFromDB(username, projID);
+
+//         // Retrieve the blob data as a buffer and content type
+//         const { contentType, buffer } = await getBlobDataAsBuffer(username, projID, fileUrl);
+
+//         // If buffer or contentType is not found, return null to indicate failure
+//         if (!buffer || !contentType) {
+//             return { success: false, message: "Media not found." };
+//         }
+
+//         // Return the media details for further handling
+//         return {
+//             success: true,
+//             contentType,
+//             buffer,
+//             fileUrl
+//         };
+//     } catch (error) {
+//         console.error("Error processing media request:", error.message);
+//         return { success: false, message: error.message };
+//     }
+// }
+
+async function getMediaDetails(username, projID) {
+    try {
+        // Fetch the blob name from the database
+        const fileUrl = await fetchBlobNameFromDB(username, projID);
+
+        // Construct the blob name (path to blob in Azure)
+        const blobName = `${projID}/${username}/${fileUrl}`;
+
+        // Generate SAS token for the specific blob
+        const sasToken = await generateBlobSasToken(containerName, blobName);
+
+        // Construct the URL with SAS token
+        const mediaUrl = `https://${ACCOUNTNAME}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+
+        return {
+            success: true,
+            mediaUrl,
+            contentType: 'image/png',  // You can modify this dynamically based on the file type
+        };
+    } catch (error) {
+        console.error("Error processing media request:", error.message);
+        return { success: false, message: error.message };
+    }
+}
+
+async function getBlobDataAsBuffer(username, projID, fileUrl) {
+    try {
+        
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const blobName = `${projID}/${username}/${fileUrl}`;
+        console.log("Blob Name:", blobName);
+
+        const blobClient = containerClient.getBlobClient(blobName);
+        const downloadResponse = await blobClient.download();
+        
+        // Convert the stream to a buffer
+        const chunks = [];
+        for await (const chunk of downloadResponse.readableStreamBody) {
+            chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        
+        // Return the buffer and content type
+        return {
+            contentType: downloadResponse.contentType || 'application/octet-stream',
+            buffer: buffer,
+        };
+    } catch (error) {
+        console.error(`Error retrieving blob ${fileUrl}:`, error);
+        throw new Error("Failed to retrieve blob");
+    }
+}
+
+
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
