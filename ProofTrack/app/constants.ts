@@ -1,5 +1,5 @@
 /* The IP of our server. */
-export const SERVER_IP: string = '10.18.47.117';//'13.64.145.249';
+export const SERVER_IP: string = '13.64.145.249';//'13.64.145.249';
 
 /* The port our server runs on. */
 export const SERVER_PORT: string = '3000';
