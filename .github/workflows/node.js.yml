@@ -31,6 +31,7 @@ jobs:
       - name: Install backend dependencies
         run: |
           cd back-end
+          pwd
           cat .env
           npm install jest --save-dev
           npm i supertest
