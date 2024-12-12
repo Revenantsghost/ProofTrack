@@ -424,7 +424,7 @@ app.delete('/hardDELETEUSER', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
+server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`!!Server is running on http://localhost:${PORT}`);
 });
 
@@ -441,4 +441,4 @@ process.on('SIGINT', async () => {
 
 
 
-module.exports = app;
+module.exports = { app, server };
