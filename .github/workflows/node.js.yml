@@ -19,15 +19,15 @@ jobs:
         run: |
           cd back-end
           touch .env
-          echo AZURE_SQL_SERVER=prooftrack.database.windows.net >> .env
-          echo AZURE_SQL_DATABASE=ProofTrack >> .env
-          echo AZURE_SQL_USERNAME=prooftrackAdmin >> .env
-          echo AZURE_SQL_PASSWORD=CSE403prooftrack >> .env
-          echo AZURE_SQL_PORT=1433 >> .env
-          echo AZURE_STORAGE_ACCOUNT_NAME=prooftrack >> .env
-          echo AZURE_STORAGE_ACCOUNT_KEY=tI1BbRl2IZfdvTxNurRUic/0y4WKtYjrWRd5swDZ2v/4FkIvcClJC8M6/sYxr1kAQ3ftlz/Z1P+q+AStJfPpFA== >> .env
-          echo AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=prooftrack;AccountKey=tI1BbRl2IZfdvTxNurRUic/0y4WKtYjrWRd5swDZ2v/4FkIvcClJC8M6/sYxr1kAQ3ftlz/Z1P+q+AStJfPpFA==;EndpointSuffix=core.windows.net >> .env
-          echo AZURE_STORAGE_CONTAINER_NAME=demo >> .env
+          echo "AZURE_SQL_SERVER=prooftrack.database.windows.net" >> .env
+          echo "AZURE_SQL_DATABASE=ProofTrack" >> .env
+          echo "AZURE_SQL_USERNAME=prooftrackAdmin" >> .env
+          echo "AZURE_SQL_PASSWORD=CSE403prooftrack" >> .env
+          echo "AZURE_SQL_PORT=1433" >> .env
+          echo "AZURE_STORAGE_ACCOUNT_NAME=prooftrack" >> .env
+          echo "AZURE_STORAGE_ACCOUNT_KEY=tI1BbRl2IZfdvTxNurRUic/0y4WKtYjrWRd5swDZ2v/4FkIvcClJC8M6/sYxr1kAQ3ftlz/Z1P+q+AStJfPpFA==" >> .env
+          echo "AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=prooftrack;AccountKey=tI1BbRl2IZfdvTxNurRUic/0y4WKtYjrWRd5swDZ2v/4FkIvcClJC8M6/sYxr1kAQ3ftlz/Z1P+q+AStJfPpFA==;EndpointSuffix=core.windows.net" >> .env
+          echo "AZURE_STORAGE_CONTAINER_NAME=demo" >> .env
       - name: Install backend dependencies
         run: |
           cd back-end
