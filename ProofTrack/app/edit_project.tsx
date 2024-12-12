@@ -72,6 +72,7 @@ export default function EditProject() {
           /* Fetch project details, provide endpoint params using projInfo. */
           const imageResponse = await fetch(`${SERVER}/media/${projInfo.username}/${projInfo.projID}`, {
             method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
           })
           /* Error checking. */
           if (!imageResponse.ok) {
@@ -79,21 +80,23 @@ export default function EditProject() {
             throw new Error('Failed to fetch media files');
           }
           else {
-            console.log('response ok');
+            console.log('Response Ok');
           }
 
           // Retrieve the response as a buffer.
-          const buffer = await imageResponse.arrayBuffer();
+          const data = await imageResponse.json();
 
-          // Create a Blob from the buffer and generate a URL.
-          const blob = new Blob([buffer]);
-          const imgURL = URL.createObjectURL(blob);
+          // Validate response success.
+          if (data.success && data.mediaUrl) {
+            const imgURL = data.mediaUrl;
+            console.log(`Media URL: ${imgURL}`);
 
-          // Displaying the image URL (if applicable).
-          console.log(`Generated Image URL: ${imgURL}`);
-
-          // Set the image directly for display.
-          setImages([imgURL]);
+            // Set the image URL for display.
+            setImages([imgURL]);
+          }
+          else {
+            throw new Error('Invalid response structure or missing media URL');
+          }
         }
         catch(error) {
           console.error('Error fetching media files:', error);
