@@ -79,13 +79,23 @@ export default function EditProject() {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }
+          else {
+            console.log('Response Ok');
+          }
+
+          // Retrieve the response as a buffer.
           const data = await imageResponse.json();
-          if (data.success) {
-            const fetchedImages = data.files.map((file: { fileName: string; fileData: string }) =>
-              `data:image/png;base64,${file.fileData}` // Construct data URI for base64 images
-            );
-            console.log(fetchedImages);
-            setImages(fetchedImages);
+
+          // Validate response success.
+          if (data.success && data.mediaUrl) {
+            const imgURL = data.mediaUrl;
+            console.log(`Media URL: ${imgURL}`);
+
+            // Set the image URL for display.
+            setImages([imgURL]);
+          }
+          else {
+            throw new Error('Invalid response structure or missing media URL');
           }
         }
         catch(error) {
@@ -129,7 +139,7 @@ export default function EditProject() {
       {/* Project Images */}
       <Text style={styles.sectionTitle}>Images</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
-        {project.images.map((imageUrl, index) => (
+        {images.map((imageUrl, index) => (
           <Image key={index} source={{ uri: imageUrl }} style={styles.image} />
         ))}
       </ScrollView>
