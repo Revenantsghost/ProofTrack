@@ -39,7 +39,7 @@ jobs:
       - name: Test backend
         run: |
           cd back-end
-          //pm2 delete index
+          pm2 delete index
           npm test
       - name: Start backend server
         run: |
