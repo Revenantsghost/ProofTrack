@@ -307,7 +307,7 @@ async function getMediaDetails(username, projID) {
         const sasToken = await generateBlobSasToken(containerName, blobName);
 
         // Construct the URL with SAS token
-        const mediaUrl = `https://${ACCOUNTNAME}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+        const mediaUrl = `https://${ACCOUNTNAME}.blob.core.windows.net/${containerName}/${blobName}`;
 
         return {
             success: true,
