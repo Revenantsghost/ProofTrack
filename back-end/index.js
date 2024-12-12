@@ -239,10 +239,10 @@ app.post('/uploadProject', async (req, res) => {
         if (result.recordset.length <= 0) {
             res.status(404).send('User not found');
         } else {
-            await pool.request().input('user_name', user_name)
-                .query('UPDATE users SET num_of_projects=num_of_projects+1 WHERE user_name=@user_name');
             result = await pool.request()
                             .input('user_name', user_name).query(`SELECT COUNT(*) AS count FROM projects WHERE user_name=@user_name`);
+            await pool.request().input('user_name', user_name)
+                .query('UPDATE users SET num_of_projects=num_of_projects+1 WHERE user_name=@user_name');
             const proj_id = result.recordset[0].count + 1;
             await pool.request()
                 .input('user_name', user_name)
