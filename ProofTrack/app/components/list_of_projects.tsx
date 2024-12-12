@@ -4,8 +4,8 @@ import { getServer } from '../constants';
 
 const SERVER: string = getServer();
 
-/* Type aliasing to make the `projects` state field more clear. */
-type ProjectEntry = {
+/* Interface to make the `projects` state field more clear. */
+interface ProjectEntry {
   /* The project's title. */
   title: string,
   /* The project's UNIQUE ID "number". */
@@ -13,7 +13,7 @@ type ProjectEntry = {
 }
 
 /* Props! */
-type ListOfProjectProps = {
+interface ListOfProjectProps {
   /* The current user's username. */
   username: string,
   /* An event handler. Called when a project item is tapped. */
@@ -27,7 +27,7 @@ type ListOfProjectProps = {
  * @returns {JSX.Element} A list of pressable item row components.
  * What they do when pressed is defined in @props (handleProjectPress).
  */
-export default function ListOfProjects(props: ListOfProjectProps ) {
+export default function ListOfProjects(props: ListOfProjectProps) {
   /* Undefined only when loading/fetching user's projects from the backend.
    * Therefore an empty list means the user has no projects. */
   const [projects, setProjects] = useState<ProjectEntry[] | undefined>(undefined);
