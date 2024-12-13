@@ -102,7 +102,7 @@ export default function EditProject() {
       fetchInfo();
       fetchImages();
     }
-  }, [projInfo]);
+  }, []);
 
   // Display loading message as project info is fetched
   if (!project) {
