@@ -6,17 +6,66 @@ import { getServer } from './constants'
 
 const SERVER: string = getServer();
 
-/* Renders a login page that users have to login to.
- * (Currently it accepts any non-empty input as a successful login) */
+/* Renders a login page that users have to login to. */
 export default function Login() {
   /* The username that's entered during a login attempt. */
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState<string>('');
   /* The password that's entered during a login attempt. */
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState<string>('');
+  /* If there's a problem, these states will be non-empty. */
+  const [usernameFieldText, setUsernameFieldText] = useState<string>('');
+  const [passwordFieldText, setPasswordFieldText] = useState<string>('');
+
+  const handleLogin = async () => {
+    var attempt: LoginAttempt | undefined = {
+      usernameEntered: true,
+      passwordEntered: true,
+      loginValid: true,
+      successful: true,
+    };
+
+    attempt = await handleLoginFrontend(username, password, attempt);
+    /* Only check the backend if the frontend input is properly formed. */
+    if (attempt.usernameEntered && attempt.passwordEntered) {
+      attempt = await handleLoginBackend(username, password, attempt);
+    }
+
+    if (!attempt) {
+      Alert.alert('Internal error encountered.', 'Please try again later.');
+      return;
+    }
+
+    /* Reset them briefly. */
+    setUsernameFieldText('');
+    setPasswordFieldText('');
+
+    if (attempt.successful) {
+      /* A friendly welcome message! */
+      Alert.alert('Login Successful', `Welcome back, ${username}!`);
+      router.replace(`./(tabs)/?username=${username}`);
+    }
+
+    if (!attempt.usernameEntered) {
+      setUsernameFieldText("Please enter your username.");
+    }
+
+    if (!attempt.passwordEntered) {
+      setPasswordFieldText("Please enter your password.");
+    }
+
+    if (!attempt.loginValid) {
+      setUsernameFieldText("Invalid username or password.");
+      setPasswordFieldText("Invalid username or password.");
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
+
+      <Text style={{fontSize: 15, color: "red", textAlign: "left" }}>
+        {usernameFieldText}
+      </Text>
 
       <TextInput
         style={styles.input}
@@ -25,6 +74,11 @@ export default function Login() {
         onChangeText={setUsername}
         autoCapitalize="none"
       />
+
+      <Text style={{fontSize: 15, color: "red", textAlign: "left" }}>
+        {passwordFieldText}
+      </Text>
+
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -33,10 +87,7 @@ export default function Login() {
         secureTextEntry
       />
 
-      <Pressable
-        style={styles.button}
-        onPress={() => {handleLogin(username, password)}}
-      >
+      <Pressable style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
 
@@ -48,38 +99,45 @@ export default function Login() {
   );
 };
 
-/* Handles a user's attempt to log in.
- * If successful, sends the user to the home page.
- * If unsuccessful, alerts the user of the problem and benignly returns.
- * Unsuccessful if:
- * * Invalid username or password.
- * * Not all fields entered. */
-async function handleLogin(username: string, password: string) {
-  if (!username) {
-    /* Make sure user entered their username. */
-    Alert.alert('Error', 'Please enter your username.');
-    return;
-  } else if (!password) {
-    /* Make sure user entered their password. */
-    Alert.alert('Error', 'Please enter your password.');
-    return;
-  }
-
-  /* Attempt to get a record type pertaining to this user.
-   * Handles the case of invalid username/password. */
-  const loginAttempt: boolean = await attemptLogin(username, password);
-  if (loginAttempt) {
-    /* A friendly welcome message! */
-    Alert.alert('Login Successful', `Welcome back, ${username}!`);
-    router.replace(`./(tabs)/?username=${username}`);
-  }
+/* A biggol interface to evaluate the login attempt. */
+interface LoginAttempt {
+  /* True iff the username field is non-empty. */
+  usernameEntered: boolean,
+  /* True iff the password field is non-empty. */
+  passwordEntered: boolean,
+  /* True iff account found for entered username and password. */
+  loginValid: boolean,
+  /* True iff the account creation was successful (all other fields true). */
+  successful: boolean,
 }
 
-/* Attempts to log the user in.
- * Returns true upon success.
- * If user inputs invalid username/password, returns false.
- * Throws an error (and then returns false) if server error encountered. */
-async function attemptLogin(username: string, password: string): Promise<boolean> {
+/* Evaluates a user's attempt to login on the front-end.
+ * Returns a LoginAttempt record type as an evaluation. */
+async function handleLoginFrontend(username: string,
+                                   password: string,
+                                   attempt: LoginAttempt): Promise<LoginAttempt> {
+
+                                 
+  if (!username) {
+    /* Make sure user entered their username. */
+    attempt.usernameEntered = false;
+    attempt.successful = false;
+  }
+
+  if (!password) {
+    /* Make sure user entered their password. */
+    attempt.passwordEntered = false;
+    attempt.successful = false;
+  }
+  return attempt;
+}
+
+/* Evaluates a user's attempt to login on the back-end.
+ * Upon server/internal error, returns undefined.
+ * Otherwise, returns a LoginAttempt record type as an evaluation. */
+async function handleLoginBackend(username: string,
+                                  password: string,
+                                  attempt: LoginAttempt): Promise<LoginAttempt | undefined> {
   const route: string = 'login';
   try {
     const response: Response = await fetch(`${SERVER}/${route}`, {
@@ -94,24 +152,22 @@ async function attemptLogin(username: string, password: string): Promise<boolean
     });
     const invalid_login_status: number = 404;
     if (response.status == invalid_login_status) {
-      /* Invalid username/password status.
-       * Not an error, but still return false. */
-      Alert.alert('Login failed.', 'Invalid username or password.');
-      return false;
+      /* A status of 404 means the username or password weren't found. */
+      attempt.loginValid = false;
+      attempt.successful = false;
     } else if (!response.ok) {
-      /* Server error!
+      /* Either a server error or internal error.
        * Throw the error and let the catch block handle it. */
       throw new Error('Server error');
     } else {
       console.log("Login OK.");
     }
   } catch (error) {
-    /* Log the error and THEN return false. */
+    /* Log the error and THEN return undefined. */
     console.error('Internal error encountered:', error);
-    Alert.alert('Internal error encountered.', 'Please try again later.');
-    return false;
+    return undefined;
   }
-  return true;
+  return attempt;
 }
 
 const styles = StyleSheet.create({

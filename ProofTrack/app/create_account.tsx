@@ -15,12 +15,74 @@ export default function CreateAccount() {
   const [password, setPassword] = useState('');
   /* Password and PasswordConfirm MUST be equal. */
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  /* If there's a problem, these states will be non-empty. */
+  const [usernameFieldText, setUsernameFieldText] = useState<string>('');
+  const [passwordFieldText, setPasswordFieldText] = useState<string>('');
+  const [passwordConfirmFieldText, setPasswordConfirmFieldText] = useState<string>('');
+
+  const handleCreation = async () => {
+    var attempt: CreationAttempt | undefined = {
+      usernameEntered: true,
+      usernameAvailable: true,
+      passwordEntered: true,
+      passwordConfirmEntered: true,
+      passwordsMatch: true,
+      successful: true,
+    };
+
+    attempt = await handleCreationFrontend(username, password, passwordConfirm, attempt);
+    /* Only check the backend if the frontend input is properly formed. */
+    if (attempt.usernameEntered && attempt.passwordEntered) {
+      attempt = await handleCreationBackend(username, password, attempt);
+    }
+
+    /* Reset them briefly. */
+    setUsernameFieldText('');
+    setPasswordFieldText('');
+    setPasswordConfirmFieldText('');
+
+    if (!attempt) {
+      Alert.alert('Internal error encountered.', 'Please try again later.');
+      return;
+    }
+
+    if (attempt.successful) {
+      /* A friendly welcome message! */
+      Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
+      /* This takes the new user to the homepage. */
+      router.replace(`./(tabs)/?username=${username}`);
+    }
+
+    if (!attempt.usernameEntered) {
+      setUsernameFieldText("Please enter a username.");
+    }
+
+    if (!attempt.passwordEntered) {
+      setPasswordFieldText("Please enter a password.");
+    }
+
+    if (!attempt.passwordConfirmEntered) {
+      setPasswordConfirmFieldText("Please confirm your password.");
+    }
+
+    if (!attempt.passwordsMatch && password && passwordConfirm) {
+      setPasswordFieldText("Passwords don't match.");
+      setPasswordConfirmFieldText("Passwords don't match.");
+    }
+
+    if (!attempt.usernameAvailable) {
+      setUsernameFieldText("Username not available.");
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Your Account</Text>
 
-      <Text style={{fontSize: 20, textAlign: "center" }}>Username</Text>
+      <Text style={{fontSize: 15, color: "red", textAlign: "left" }}>
+        {usernameFieldText}
+      </Text>
+
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -28,7 +90,11 @@ export default function CreateAccount() {
         onChangeText={setUsername}
         autoCapitalize="none"
       />
-      <Text style={{fontSize: 20, textAlign: "center" }}>Password</Text>
+
+      <Text style={{fontSize: 15, color: "red", textAlign: "left" }}>
+        {passwordFieldText}
+      </Text>
+
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -36,7 +102,11 @@ export default function CreateAccount() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Text style={{fontSize: 20, textAlign: "center" }}>Confirm Password</Text>
+
+      <Text style={{fontSize: 15, color: "red", textAlign: "left" }}>
+        {passwordConfirmFieldText}
+      </Text>
+
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
@@ -45,10 +115,7 @@ export default function CreateAccount() {
         secureTextEntry
       />
 
-      <Pressable
-        style={styles.button}
-        onPress={() => {handleCreation(username, password, passwordConfirm)}}
-      >
+      <Pressable style={styles.button} onPress={handleCreation}>
         <Text style={styles.buttonText}>Create Account</Text>
       </Pressable>
 
@@ -60,48 +127,56 @@ export default function CreateAccount() {
   );
 };
 
-/* Handles a new user's attempt to create an account.
- * If successful, creates information on new user and sends them to main app.
- * If unsuccessful, alerts the User of the problem and benignly returns.
- * Unsuccessful if:
- * * Username already taken.
- * * Not all fields entered.
- * * Passwords don't match. */
-async function handleCreation(username: string, password: string, passwordConfirm: string) {
-  if (!username) {
-    /* Make sure user entered their username. */
-    Alert.alert('Error', 'Please enter your username.');
-    return;
-  } else if (!password) {
-    /* Make sure user entered their password. */
-    Alert.alert('Error', 'Please enter your password.');
-    return;
-  } else if (!passwordConfirm) {
-    /* Make sure user confirmed their password. */
-    Alert.alert('Error', 'Please confirm your password.');
-    return;
-  } else if (password !== passwordConfirm) {
-    /* Make sure "Password" and "Confirm Password" match. */
-    Alert.alert('Error', 'Passwords do not match.');
-    return;
-  }
-  
-  /* Attempt to create a user and send to backend.
-   * Handles the case of username already being taken. */
-  const sendAttempt: boolean = await sendNewUser(username, password);
-  if (sendAttempt) {
-    /* A friendly welcome message! */
-    Alert.alert('Account Creation Successful', `Welcome, ${username}!`);
-    /* This takes the new user to the homepage. */
-    router.replace(`./(tabs)/?username=${username}`);
-  }
+/* A biggol interface to evaluate the account creation attempt. */
+interface CreationAttempt {
+  /* True iff the username field is non-empty. */
+  usernameEntered: boolean,
+  /* True iff the entered username is available. */
+  usernameAvailable: boolean,
+  /* True iff the password field is non-empty. */
+  passwordEntered: boolean,
+  /* True iff the "confirm password" field is non-empty. */
+  passwordConfirmEntered: boolean,
+  /* True iff the entered passwords match. */
+  passwordsMatch: boolean,
+  /* True iff the account creation was successful (all other fields true). */
+  successful: boolean,
 }
 
-/* Attempts to send a new user to the database.
- * Returns false if username already taken.
- * Throws an error (and then returns false) if server error encountered.
- * Returns true if no issues encountered. */
-async function sendNewUser(user_name: string, password: string): Promise<boolean> {
+/* Evaluates a user's attempt to create an account on the front-end.
+ * Returns a CreationAttempt record type as an evaluation. */
+async function handleCreationFrontend(username: string,
+                                      password: string,
+                                      passwordConfirm: string,
+                                      attempt: CreationAttempt): Promise<CreationAttempt> {
+  if (!username) {
+    attempt.usernameEntered = false;
+    attempt.successful = false;
+  } 
+  
+  if (!password) {
+    attempt.passwordEntered = false;
+    attempt.successful = false;
+  } 
+  
+  if (!passwordConfirm) {
+    attempt.passwordConfirmEntered = false;
+    attempt.successful = false;
+  } 
+  
+  if (password !== passwordConfirm) {
+    attempt.passwordsMatch = false;
+    attempt.successful = false;
+  }
+  return attempt;
+}
+
+/* Evaluates a user's attempt to creation an account on the back-end.
+ * Upon server/internal error, returns undefined.
+ * Otherwise, returns a CreationAttempt record type as an evaluation. */
+async function handleCreationBackend(user_name: string,
+                                     password: string,
+                                     attempt: CreationAttempt): Promise<CreationAttempt | undefined> {
   try {
     const route: string = 'register'
     const response: Response = await fetch(`${SERVER}/${route}`, {
@@ -113,24 +188,22 @@ async function sendNewUser(user_name: string, password: string): Promise<boolean
     });
     const taken_status: number = 409;
     if (response.status === taken_status) {
-      /* A status of 409 means the username was already taken.
-       * As this isn't technically an internal error, just return false. */
-      Alert.alert('Error', 'Username already taken.');
-      return false;
+      /* A status of 409 means the username was already taken. */
+      attempt.usernameAvailable = false;
+      attempt.successful = false;
     } else if (!response.ok) {
-      /* A server error is most definitely an internal error.
+      /* Either a server error or internal error.
        * Throw the error and let the catch block handle it. */
       throw new Error('Server error');
     } else {
-      console.log("OK");
+      console.log("Account creation OK.");
     }
   } catch(error) {
-    /* Log the error and THEN return false. */
+    /* Log the error and THEN return undefined. */
     console.error('Error fetching profile:', error);
-    Alert.alert('Error setting up profile.', 'Please try again later.');
-    return false;
+    return undefined;
   }
-  return true;
+  return attempt;
 }
 
 const styles = StyleSheet.create({
