@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, Button, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -15,7 +15,7 @@ const PlaceholderImage = require('@/assets/images/no_items_selected_image.png');
 // also contains the submit button for proof submission
 
 export interface MediaOptionsRouteParams {
-    selectedImage?: string; // selectedImage is optional, as it might not always be passed
+  selectedImage?: string; // selectedImage is optional, as it might not always be passed
 }
 
 export default function MediaOptions() {
