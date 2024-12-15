@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { View, Text, TextInput, Pressable } from 'react-native';
-import { StyleSheet, Alert, Button } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
+import { StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { getServer } from './constants';
 
 const SERVER: string = getServer();
@@ -115,14 +115,13 @@ export default function CreateAccount() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={handleCreation}>
+      <TouchableOpacity style={styles.button} onPress={handleCreation}>
         <Text style={styles.buttonText}>Create Account</Text>
-      </Pressable>
+      </TouchableOpacity>
 
-      <Button
-        onPress={() => {router.replace('./login')}}
-        title='Already own an account? Log in!'
-      />
+      <TouchableOpacity onPress={() => {router.replace('./login')}}>
+        <Text style={styles.linkText}>{'Already own an account? Log in'}</Text>
+      </TouchableOpacity> 
     </View>
   );
 };
@@ -237,8 +236,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
+  linkText: {
+    top: 10,
+    fontSize: 18,
+    color: "blue",
+    textAlign: "center"
   },
 });

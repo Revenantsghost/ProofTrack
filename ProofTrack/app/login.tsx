@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { View, Text, TextInput, Pressable } from 'react-native';
-import { StyleSheet, Alert, Button } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
+import { StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { getServer } from './constants'
 
 const SERVER: string = getServer();
@@ -87,14 +87,13 @@ export default function Login() {
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
-      </Pressable>
+      </TouchableOpacity>     
 
-      <Button
-        onPress={() => {router.replace('./create_account')}}
-        title='New user? Create account'
-      />
+      <TouchableOpacity onPress={() => {router.replace('./create_account')}}>
+        <Text style={styles.linkText}>{'New user? Create account'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -116,8 +115,6 @@ interface LoginAttempt {
 async function handleLoginFrontend(username: string,
                                    password: string,
                                    attempt: LoginAttempt): Promise<LoginAttempt> {
-
-                                 
   if (!username) {
     /* Make sure user entered their username. */
     attempt.usernameEntered = false;
@@ -201,8 +198,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
+  linkText: {
+    top: 10,
+    fontSize: 18,
+    color: "blue",
+    textAlign: "center"
   },
 });
