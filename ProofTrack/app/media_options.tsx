@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontSize: 18,
-    color: "limegreen",
+    color: "#4A90E2",
     textAlign: "center"
   },
 });

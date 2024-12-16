@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   linkText: {
     top: 10,
     fontSize: 18,
-    color: "blue",
+    color: "#4A90E2",
     textAlign: "center"
   },
 });
