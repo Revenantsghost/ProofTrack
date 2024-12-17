@@ -24,6 +24,8 @@ export default function Profile() {
     const num_projects: number | undefined = await fetchNumProjects(username);
     if (num_projects !== undefined) {
       setNumProjects(`${num_projects}`);
+    } else {
+      setNumProjects('Error!');
     }
   }
 
@@ -66,7 +68,7 @@ export default function Profile() {
       <View style={{ top: 310 }}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => router.replace('../login')}
+          onPress={() => {router.replace('../login')}}
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
