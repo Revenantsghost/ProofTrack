@@ -75,8 +75,15 @@ export default function EditProject() {
             headers: { 'Content-Type': 'application/json' },
           });
 
-          /* Error checking. */
-          if (!imageResponse.ok) {
+          /* Empty checking and error checking. */
+          const no_images_status: number = 404;
+          if (imageResponse.status === no_images_status) {
+            /* A status of 404 means there are no images found for this project.
+             * Not an error, but make a note of it. */
+            setImages([]);
+            console.log(`No images found for project ${projInfo.projID} of user ${projInfo.username}.`);
+            return;
+          } else if (!imageResponse.ok) {
             console.log(`Image Response Not Okay. Status: ${imageResponse.status}`);
             throw new Error('Failed to fetch media files');
           }

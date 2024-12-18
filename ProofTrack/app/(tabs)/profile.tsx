@@ -30,12 +30,9 @@ export default function Profile() {
   }
 
   /* Fetch user's number of projects when the component mounts. */
-  /*
   useEffect(() => {
     populateNumProjects();
-  }, []); */
-  /* I will also try without using useEffect. */
-  populateNumProjects();
+  }, []);
 
   return (
     <View>
@@ -51,7 +48,7 @@ export default function Profile() {
       <View style={{ top: 80 }}>
         <Text style={styles.leftText}>Password</Text>
         <TouchableOpacity
-          onPress={() => router.navigate(`../change_password?username=${username}`)}
+          onPress={() => {router.navigate(`../change_password?username=${username}`)}}
         >
           <Text style={styles.rightLink}>{"[Edit]"}</Text>
         </TouchableOpacity>
